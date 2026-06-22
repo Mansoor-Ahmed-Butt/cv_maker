@@ -86,7 +86,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
                         Obx(
                           () => controller.currentPage.value < 2
                               ? TextButton(
-                                  onPressed: controller.skipToEnd,
+                                  onPressed: () => controller.skipToEnd(context),
                                   style: TextButton.styleFrom(foregroundColor: AppColors.whiteColor.withValues(alpha: 0.7)),
                                   child: const Text('Skip', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                                 )

@@ -6,6 +6,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:flutter_with_hive/core/app_router.dart';
 import 'package:flutter_with_hive/core/themes.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_with_hive/view/home_page/my_profile_screens/profile_model.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
@@ -15,6 +16,7 @@ const String _stripePublishableKey = String.fromEnvironment('STRIPE_PUBLISHABLE_
 
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  debugInvertOversizedImages = true;
 
   // Keep native splash until app is ready.
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
@@ -53,6 +55,14 @@ Future<void> _initializeServices() async {
     Hive.init(directory.path);
   }
 
+  // Register Hive adapters
+  if (!Hive.isAdapterRegistered(1)) {
+    Hive.registerAdapter(ProfileModelAdapter());
+  }
+
+  // Pre-open the profile box so it's ready before the profile tab is tapped
+  await Hive.openBox<ProfileModel>('profileBox');
+
   // Add other async inits here (analytics, remote config, etc.)
 }
 
@@ -69,6 +79,7 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return MaterialApp.router(
+          //showPerformanceOverlay: true,
           routerDelegate: RouteConfig.routes.routerDelegate,
           routeInformationParser: RouteConfig.routes.routeInformationParser,
           routeInformationProvider: RouteConfig.routes.routeInformationProvider,
@@ -78,11 +89,7 @@ class MyApp extends StatelessWidget {
             primaryColor: Colors.green,
             colorScheme: appColors,
             highlightColor: const Color(0xffFC9D74),
-            textSelectionTheme: TextSelectionThemeData(
-              selectionColor: AppColors.bodyText.withValues(alpha: 0.4),
-              cursorColor: AppColors.primaryColor,
-              selectionHandleColor: AppColors.primaryColor,
-            ),
+            textSelectionTheme: TextSelectionThemeData(selectionColor: AppColors.bodyText.withValues(alpha: 0.4), cursorColor: AppColors.primaryColor, selectionHandleColor: AppColors.primaryColor),
           ),
           debugShowCheckedModeBanner: false,
         );

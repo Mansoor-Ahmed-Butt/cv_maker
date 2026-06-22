@@ -41,11 +41,7 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen> with TickerProv
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.homeBackgroundColor1, AppColors.homeBackgroundColor2, AppColors.homeBackgroundColor3],
-        ),
+        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppColors.homeBackgroundColor1, AppColors.homeBackgroundColor2, AppColors.homeBackgroundColor3]),
       ),
       child: Stack(
         children: [
@@ -70,26 +66,6 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen> with TickerProv
               );
             },
           ),
-          // AnimatedBuilder(
-          //   animation: _rotationController,
-          //   builder: (context, child) {
-          //     return Positioned(
-          //       bottom: -150,
-          //       left: -100,
-          //       child: Transform.rotate(
-          //         angle: -_rotationController.value * 2 * math.pi,
-          //         child: Container(
-          //           width: 400,
-          //           height: 400,
-          //           decoration: BoxDecoration(
-          //             shape: BoxShape.circle,
-          //             gradient: RadialGradient(colors: [const Color(0xFFEC4899).withValues(alpha:0.1), AppColors.transparent]),
-          //           ),
-          //         ),
-          //       ),
-          //     );
-          //   },
-          // ),
 
           // Main Content
           SafeArea(
@@ -113,7 +89,6 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen> with TickerProv
                               child: Text('Hello, Creative! ✨', style: AppStyle.style18w500(color: AppColors.whiteColor)),
                             ),
                             SizedBox(height: 8.h),
-
                             Text('Build Your Future', style: AppStyle.style32w700(color: AppColors.whiteColor).copyWith(letterSpacing: -0.5)),
                           ],
                         ),
@@ -122,9 +97,7 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen> with TickerProv
                             Container(
                               padding: EdgeInsets.all(14.r),
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [AppColors.appBlue.withValues(alpha: 0.3), AppColors.appPink.withValues(alpha: 0.3)],
-                                ),
+                                gradient: LinearGradient(colors: [AppColors.appBlue.withValues(alpha: 0.3), AppColors.appPink.withValues(alpha: 0.3)]),
                                 borderRadius: BorderRadius.circular(18.r),
                                 border: Border.all(color: AppColors.whiteColor.withValues(alpha: 0.2)),
                               ),
@@ -159,15 +132,9 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen> with TickerProv
                         width: double.infinity,
                         padding: EdgeInsets.all(28.r),
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [AppColors.appBlue, AppColors.appPurple, AppColors.appPink],
-                          ),
+                          gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppColors.appBlue, AppColors.appPurple, AppColors.appPink]),
                           borderRadius: BorderRadius.circular(28.r),
-                          boxShadow: [
-                            BoxShadow(color: AppColors.appBlue.withValues(alpha: 0.4), blurRadius: 30, offset: const Offset(0, 15), spreadRadius: 5),
-                          ],
+                          boxShadow: [BoxShadow(color: AppColors.appBlue.withValues(alpha: 0.4), blurRadius: 30, offset: const Offset(0, 15), spreadRadius: 5)],
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,20 +148,12 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen> with TickerProv
                                     borderRadius: BorderRadius.circular(16.r),
                                     boxShadow: [BoxShadow(color: AppColors.blackColor.withValues(alpha: 0.1), blurRadius: 10)],
                                   ),
-                                  child: CustomIcon(
-                                    iconOnly: true,
-                                    icon: Icons.workspace_premium_rounded,
-                                    iconColor: AppColors.whiteColor,
-                                    size: 36.r,
-                                  ),
+                                  child: CustomIcon(iconOnly: true, icon: Icons.workspace_premium_rounded, iconColor: AppColors.whiteColor, size: 36.r),
                                 ),
                                 const Spacer(),
                                 Container(
                                   padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.blackColor.withValues(alpha: 0.2),
-                                    borderRadius: BorderRadius.circular(20.r),
-                                  ),
+                                  decoration: BoxDecoration(color: AppColors.blackColor.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(20.r)),
                                   child: Row(
                                     children: [
                                       CustomIcon(iconOnly: true, icon: Icons.star_rounded, iconColor: AppColors.appYellowC, size: 18.r),
@@ -209,19 +168,14 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen> with TickerProv
                             SizedBox(height: 24.h),
                             Text('Create Your\nDream Resume', style: AppStyle.style28w700(color: AppColors.whiteColor)),
                             SizedBox(height: 12.h),
-                            Text(
-                              'AI-powered templates designed by experts to help you land your dream job faster',
-                              style: AppStyle.style15w500(color: AppColors.whiteColor.withValues(alpha: 0.7)),
-                            ),
+                            Text('AI-powered templates designed by experts to help you land your dream job faster', style: AppStyle.style15w500(color: AppColors.whiteColor.withValues(alpha: 0.7))),
                             SizedBox(height: 24.h),
                             Container(
                               width: double.infinity,
                               decoration: BoxDecoration(
                                 color: AppColors.whiteColor,
                                 borderRadius: BorderRadius.circular(16.r),
-                                boxShadow: [
-                                  BoxShadow(color: AppColors.blackColor.withValues(alpha: 0.2), blurRadius: 15, offset: const Offset(0, 8)),
-                                ],
+                                boxShadow: [BoxShadow(color: AppColors.blackColor.withValues(alpha: 0.2), blurRadius: 15, offset: const Offset(0, 8))],
                               ),
                               child: Material(
                                 color: AppColors.transparent,
@@ -234,8 +188,7 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen> with TickerProv
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         ShaderMask(
-                                          shaderCallback: (bounds) =>
-                                              const LinearGradient(colors: [AppColors.appBlue, AppColors.appPink]).createShader(bounds),
+                                          shaderCallback: (bounds) => const LinearGradient(colors: [AppColors.appBlue, AppColors.appPink]).createShader(bounds),
                                           child: Text('Start Creating Now', style: AppStyle.style17w700(color: AppColors.whiteColor)),
                                         ),
                                         SizedBox(width: 8.w),
@@ -312,31 +265,11 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen> with TickerProv
                             // alertForResume(context);
                           },
 
-                          child: _buildFeatureCard(
-                            'AI Writer',
-                            'Smart content generation',
-                            Icons.auto_awesome_rounded,
-                            LinearGradient(colors: [AppColors.appBlue, AppColors.appPurple]),
-                          ),
+                          child: _buildFeatureCard('AI Writer', 'Smart content generation', Icons.auto_awesome_rounded, LinearGradient(colors: [AppColors.appBlue, AppColors.appPurple])),
                         ),
-                        _buildFeatureCard(
-                          'Export PDF',
-                          'Professional documents',
-                          Icons.picture_as_pdf_rounded,
-                          const LinearGradient(colors: [AppColors.appPink, AppColors.appOrangeC]),
-                        ),
-                        _buildFeatureCard(
-                          'Templates',
-                          '100+ designs available',
-                          Icons.palette_rounded,
-                          const LinearGradient(colors: [AppColors.appGreenC, AppColors.appDarkGreenC]),
-                        ),
-                        _buildFeatureCard(
-                          'Analytics',
-                          'Track performance insights',
-                          Icons.analytics_rounded,
-                          const LinearGradient(colors: [AppColors.appDarkYellowC, AppColors.appLightYellowC]),
-                        ),
+                        _buildFeatureCard('Export PDF', 'Professional documents', Icons.picture_as_pdf_rounded, const LinearGradient(colors: [AppColors.appPink, AppColors.appOrangeC])),
+                        _buildFeatureCard('Templates', '100+ designs available', Icons.palette_rounded, const LinearGradient(colors: [AppColors.appGreenC, AppColors.appDarkGreenC])),
+                        _buildFeatureCard('Analytics', 'Track performance insights', Icons.analytics_rounded, const LinearGradient(colors: [AppColors.appDarkYellowC, AppColors.appLightYellowC])),
                       ],
                     ),
                     SizedBox(height: 32.h),
@@ -385,11 +318,7 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen> with TickerProv
     return Container(
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.startCardColor1.withValues(alpha: 0.8), AppColors.startCardColor2.withValues(alpha: 0.8)],
-        ),
+        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppColors.startCardColor1.withValues(alpha: 0.8), AppColors.startCardColor2.withValues(alpha: 0.8)]),
         borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: AppColors.whiteColor.withValues(alpha: 0.1)),
       ),
@@ -408,11 +337,7 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen> with TickerProv
     return Container(
       padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.startCardColor1.withValues(alpha: 0.8), AppColors.startCardColor2.withValues(alpha: 0.8)],
-        ),
+        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppColors.startCardColor1.withValues(alpha: 0.8), AppColors.startCardColor2.withValues(alpha: 0.8)]),
         borderRadius: BorderRadius.circular(24.r),
         border: Border.all(color: AppColors.whiteColor.withValues(alpha: 0.1)),
         boxShadow: [BoxShadow(color: AppColors.blackColor.withValues(alpha: 0.2), blurRadius: 15, offset: const Offset(0, 8))],
@@ -453,11 +378,7 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen> with TickerProv
     return Container(
       padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.resumeCardColor1.withValues(alpha: 0.8), AppColors.resumeCardColor2.withValues(alpha: 0.8)],
-        ),
+        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppColors.resumeCardColor1.withValues(alpha: 0.8), AppColors.resumeCardColor2.withValues(alpha: 0.8)]),
         borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: AppColors.whiteColor.withValues(alpha: 0.1)),
       ),
@@ -497,12 +418,7 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen> with TickerProv
               Expanded(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10.r),
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    backgroundColor: AppColors.whiteColor.withValues(alpha: 0.1),
-                    valueColor: AlwaysStoppedAnimation<Color>(accentColor),
-                    minHeight: 8,
-                  ),
+                  child: LinearProgressIndicator(value: progress, backgroundColor: AppColors.whiteColor.withValues(alpha: 0.1), valueColor: AlwaysStoppedAnimation<Color>(accentColor), minHeight: 8),
                 ),
               ),
               SizedBox(width: 12.w),

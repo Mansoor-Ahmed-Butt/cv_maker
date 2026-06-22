@@ -17,38 +17,30 @@ class OnboardingController1 extends GetxController {
     if (currentPage.value < 2) {
       await pageController.animateToPage(currentPage.value + 1, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
     } else {
-      context.go(RouteConfig.mainHomeScreen);
       // Hive.box('settings').put('onboarding_completed', true);
-
-      Get.snackbar(
-        'Welcome!',
-        'You have completed the onboarding process',
-        backgroundColor: AppColors.appGreenC,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-        margin: EdgeInsets.all(20.r),
-        borderRadius: 10,
-        duration: const Duration(seconds: 3),
-      );
+      context.go(RouteConfig.mainHomeScreen);
     }
   }
 
-  void skipToEnd() async {
+  void skipToEnd(BuildContext context) async {
     // Calculate last page index
     final lastPageIndex = pages.length - 1;
 
     // Animate to the last page
     await pageController.animateToPage(lastPageIndex, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
-    Get.snackbar(
-      'Skipped',
-      'Onboarding process skipped',
-      backgroundColor: AppColors.appBlue,
-      colorText: Colors.white,
-      snackPosition: SnackPosition.BOTTOM,
-      margin: EdgeInsets.all(20.r),
-      borderRadius: 10,
-      duration: const Duration(seconds: 2),
-    );
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Swipe through or tap Get Started to begin'),
+          backgroundColor: AppColors.appBlue,
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.all(20.r),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   @override
