@@ -12,14 +12,12 @@ class MainHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MainHomeScreenController ctrl =
-        Get.put(MainHomeScreenController());
+    final MainHomeScreenController ctrl = Get.put(MainHomeScreenController());
 
     return ResponsiveWidget(
       mobile: Scaffold(
         extendBody: true,
-        body: Obx(() =>
-            ctrl.screenBuilders[ctrl.currentIndex.value]()),
+        body: Obx(() => ctrl.screenBuilders[ctrl.currentIndex.value]()),
         bottomNavigationBar: _FloatingNavBar(controller: ctrl),
       ),
 
@@ -28,8 +26,7 @@ class MainHomeScreen extends StatelessWidget {
         body: Center(
           child: ConstrainedBox(
             constraints: BoxConstraints(maxWidth: 800.w),
-            child: Obx(() =>
-                ctrl.screenBuilders[ctrl.currentIndex.value]()),
+            child: Obx(() => ctrl.screenBuilders[ctrl.currentIndex.value]()),
           ),
         ),
         bottomNavigationBar: _FloatingNavBar(controller: ctrl),
@@ -38,28 +35,33 @@ class MainHomeScreen extends StatelessWidget {
       desktop: Scaffold(
         body: Row(
           children: [
-            Obx(() => NavigationRail(
-                  selectedIndex: ctrl.currentIndex.value,
-                  onDestinationSelected: ctrl.changePage,
-                  labelType: NavigationRailLabelType.all,
-                  destinations: const [
-                    NavigationRailDestination(
-                        icon: Icon(Icons.home_rounded),
-                        label: Text('Home')),
-                    NavigationRailDestination(
-                        icon: Icon(Icons.grid_view_rounded),
-                        label: Text('Templates')),
-                    NavigationRailDestination(
-                        icon: Icon(Icons.folder_open_rounded),
-                        label: Text('My CVs')),
-                    NavigationRailDestination(
-                        icon: Icon(Icons.person_rounded),
-                        label: Text('Profile')),
-                  ],
-                )),
+            Obx(
+              () => NavigationRail(
+                selectedIndex: ctrl.currentIndex.value,
+                onDestinationSelected: ctrl.changePage,
+                labelType: NavigationRailLabelType.all,
+                destinations: const [
+                  NavigationRailDestination(
+                    icon: Icon(Icons.home_rounded),
+                    label: Text('Home'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.grid_view_rounded),
+                    label: Text('Templates'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.folder_open_rounded),
+                    label: Text('My CVs'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.person_rounded),
+                    label: Text('Profile'),
+                  ),
+                ],
+              ),
+            ),
             Expanded(
-              child: Obx(() =>
-                  ctrl.screenBuilders[ctrl.currentIndex.value]()),
+              child: Obx(() => ctrl.screenBuilders[ctrl.currentIndex.value]()),
             ),
           ],
         ),
@@ -81,31 +83,65 @@ class _FloatingNavBar extends StatelessWidget {
       margin: EdgeInsets.all(20.r),
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 12.h),
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [
-          AppColors.bottomNavColor1.withValues(alpha: 0.95),
-          AppColors.bottomNavColor2.withValues(alpha: 0.95),
-        ]),
+        gradient: LinearGradient(
+          colors: [
+            AppColors.bottomNavColor1.withValues(alpha: 0.95),
+            AppColors.bottomNavColor2.withValues(alpha: 0.95),
+          ],
+        ),
         borderRadius: BorderRadius.circular(30.r),
         boxShadow: [
           BoxShadow(
-              color: AppColors.bottomNavShadowColor1.withValues(alpha: 0.3),
-              blurRadius: 30,
-              offset: const Offset(0, 10)),
+            color: AppColors.bottomNavShadowColor1.withValues(alpha: 0.3),
+            blurRadius: 30,
+            offset: const Offset(0, 10),
+          ),
           BoxShadow(
-              color: AppColors.bottomNavShadowColor2.withValues(alpha: 0.5),
-              blurRadius: 20,
-              offset: const Offset(0, 5)),
+            color: AppColors.bottomNavShadowColor2.withValues(alpha: 0.5),
+            blurRadius: 20,
+            offset: const Offset(0, 5),
+          ),
         ],
         border: Border.all(
-            color: AppColors.whiteColor.withValues(alpha: 0.1), width: 1.5.h),
+          color: AppColors.whiteColor.withValues(alpha: 0.1),
+          width: 1.5.h,
+        ),
       ),
       child: Row(
         children: [
-          Expanded(child: _NavItem(index: 0, icon: Icons.home_rounded,        label: 'Home',      controller: controller)),
-          Expanded(child: _NavItem(index: 1, icon: Icons.grid_view_rounded,   label: 'Templates', controller: controller)),
+          Expanded(
+            child: _NavItem(
+              index: 0,
+              icon: Icons.home_rounded,
+              label: 'Home',
+              controller: controller,
+            ),
+          ),
+          Expanded(
+            child: _NavItem(
+              index: 1,
+              icon: Icons.grid_view_rounded,
+              label: 'Templates',
+              controller: controller,
+            ),
+          ),
           _CenterFab(controller: controller),
-          Expanded(child: _NavItem(index: 2, icon: Icons.folder_open_rounded, label: 'My CVs',    controller: controller)),
-          Expanded(child: _NavItem(index: 3, icon: Icons.person_rounded,      label: 'Profile',   controller: controller)),
+          Expanded(
+            child: _NavItem(
+              index: 2,
+              icon: Icons.folder_open_rounded,
+              label: 'My CVs',
+              controller: controller,
+            ),
+          ),
+          Expanded(
+            child: _NavItem(
+              index: 3,
+              icon: Icons.person_rounded,
+              label: 'Profile',
+              controller: controller,
+            ),
+          ),
         ],
       ),
     );
@@ -143,16 +179,20 @@ class _NavItem extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 10.h),
               decoration: BoxDecoration(
                 gradient: value > 0
-                    ? LinearGradient(colors: [
-                        Color.lerp(AppColors.transparent,
-                                AppColors.bottomNavCenterButtonColor1,
-                                value)!
-                            .withValues(alpha: 0.2),
-                        Color.lerp(AppColors.transparent,
-                                AppColors.bottomNavCenterButtonColor2,
-                                value)!
-                            .withValues(alpha: 0.2),
-                      ])
+                    ? LinearGradient(
+                        colors: [
+                          Color.lerp(
+                            AppColors.transparent,
+                            AppColors.bottomNavCenterButtonColor1,
+                            value,
+                          )!.withValues(alpha: 0.2),
+                          Color.lerp(
+                            AppColors.transparent,
+                            AppColors.bottomNavCenterButtonColor2,
+                            value,
+                          )!.withValues(alpha: 0.2),
+                        ],
+                      )
                     : null,
                 borderRadius: BorderRadius.circular(20.r),
               ),
@@ -161,8 +201,11 @@ class _NavItem extends StatelessWidget {
                 children: [
                   Icon(
                     icon,
-                    color: Color.lerp(AppColors.bottomNavIconColor1,
-                        AppColors.bottomNavIconColor2, value),
+                    color: Color.lerp(
+                      AppColors.bottomNavIconColor1,
+                      AppColors.bottomNavIconColor2,
+                      value,
+                    ),
                     size: 24,
                   ),
                   const SizedBox(height: 4),
@@ -173,10 +216,12 @@ class _NavItem extends StatelessWidget {
                         label,
                         overflow: TextOverflow.ellipsis,
                         style: AppStyle.style10w600(
-                            color: Color.lerp(
-                                AppColors.transparent,
-                                AppColors.bottomNavIconColor2,
-                                value)),
+                          color: Color.lerp(
+                            AppColors.transparent,
+                            AppColors.bottomNavIconColor2,
+                            value,
+                          ),
+                        ),
                       ),
                     ),
                 ],
@@ -213,10 +258,12 @@ class _CenterFab extends StatelessWidget {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-              color: AppColors.bottomNavCenterButtonShadowColor1
-                  .withValues(alpha: 0.6),
-              blurRadius: 20,
-              spreadRadius: 2)
+            color: AppColors.bottomNavCenterButtonShadowColor1.withValues(
+              alpha: 0.6,
+            ),
+            blurRadius: 20,
+            spreadRadius: 2,
+          ),
         ],
       ),
       child: Material(
@@ -226,7 +273,11 @@ class _CenterFab extends StatelessWidget {
           onTap: () {
             // TODO: hook up to resume creation dialog
           },
-          child: Icon(Icons.add_rounded, color: Colors.white, size: 32.r),
+          child: Icon(
+            Icons.add_rounded,
+            color: AppColors.whiteColor,
+            size: 32.r,
+          ),
         ),
       ),
     );

@@ -22,4 +22,16 @@ class SignUpController extends GetxController {
       userName: userName.text,
     );
   }
+
+  void togglePasswordVisibility() {
+    isPasswordVisible.toggle();
+  }
+
+  @override
+  void onClose() {
+    userName.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.onClose();
+  }
 }

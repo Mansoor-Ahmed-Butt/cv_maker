@@ -9,14 +9,14 @@ import 'package:flutter_with_hive/widgets/text/app_style.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
-class LogIn extends StatefulWidget {
-  const LogIn({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<LogIn> createState() => _LogInState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LogInState extends State<LogIn> {
+class _LoginScreenState extends State<LoginScreen> {
   late final LogInController controller;
 
   @override

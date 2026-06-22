@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_with_hive/core/themes.dart';
 import 'package:flutter_with_hive/view/home_page/my_profile_screens/profile_controller.dart';
+import 'package:flutter_with_hive/widgets/common/custom_app_text_field.dart';
 import 'package:flutter_with_hive/widgets/text/app_style.dart';
 import 'package:get/get.dart';
 
@@ -42,9 +43,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
         child: SafeArea(
-          child: Obx(() => _controller.isEditing.value
-              ? _EditProfileView(controller: _controller)
-              : _ViewProfileView(controller: _controller)),
+          child: Obx(
+            () => _controller.isEditing.value
+                ? _EditProfileView(controller: _controller)
+                : _ViewProfileView(controller: _controller),
+          ),
         ),
       ),
     );
@@ -62,9 +65,7 @@ class _ViewProfileView extends StatelessWidget {
     return CustomScrollView(
       slivers: [
         // ── Header ──────────────────────────────────────────────────────────
-        SliverToBoxAdapter(
-          child: _ProfileHeader(controller: controller),
-        ),
+        SliverToBoxAdapter(child: _ProfileHeader(controller: controller)),
 
         // ── Stats row ────────────────────────────────────────────────────────
         SliverToBoxAdapter(
@@ -72,11 +73,26 @@ class _ViewProfileView extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
             child: Row(
               children: [
-                _StatCard(label: 'CVs Created', value: '12', icon: Icons.description_rounded, color: AppColors.appBlue),
+                _StatCard(
+                  label: 'CVs Created',
+                  value: '12',
+                  icon: Icons.description_rounded,
+                  color: AppColors.appBlue,
+                ),
                 SizedBox(width: 12.w),
-                _StatCard(label: 'Templates Used', value: '5', icon: Icons.grid_view_rounded, color: AppColors.appPurple),
+                _StatCard(
+                  label: 'Templates Used',
+                  value: '5',
+                  icon: Icons.grid_view_rounded,
+                  color: AppColors.appPurple,
+                ),
                 SizedBox(width: 12.w),
-                _StatCard(label: 'Downloads', value: '8', icon: Icons.download_rounded, color: AppColors.appGreenC),
+                _StatCard(
+                  label: 'Downloads',
+                  value: '8',
+                  icon: Icons.download_rounded,
+                  color: AppColors.appGreenC,
+                ),
               ],
             ),
           ),
@@ -93,36 +109,68 @@ class _ViewProfileView extends StatelessWidget {
                 _SectionCard(
                   title: 'About',
                   icon: Icons.person_outline_rounded,
-                  child: Obx(() => Text(
-                        controller.profile.value.bio.isEmpty
-                            ? 'No bio added yet.'
-                            : controller.profile.value.bio,
-                        style: AppStyle.style14w400(color: AppColors.whiteColor.withValues(alpha: 0.75)).copyWith(height: 1.6),
-                      )),
+                  child: Obx(
+                    () => Text(
+                      controller.profile.value.bio.isEmpty
+                          ? 'No bio added yet.'
+                          : controller.profile.value.bio,
+                      style: AppStyle.style14w400(
+                        color: AppColors.whiteColor.withValues(alpha: 0.75),
+                      ).copyWith(height: 1.6),
+                    ),
+                  ),
                 ),
                 SizedBox(height: 16.h),
                 _SectionCard(
                   title: 'Contact',
                   icon: Icons.contact_mail_outlined,
-                  child: Obx(() => Column(
-                        children: [
-                          _InfoRow(icon: Icons.email_outlined, value: controller.profile.value.email, placeholder: 'No email added'),
-                          _InfoRow(icon: Icons.phone_outlined, value: controller.profile.value.phone, placeholder: 'No phone added'),
-                          _InfoRow(icon: Icons.location_on_outlined, value: controller.profile.value.location, placeholder: 'No location added'),
-                        ],
-                      )),
+                  child: Obx(
+                    () => Column(
+                      children: [
+                        _InfoRow(
+                          icon: Icons.email_outlined,
+                          value: controller.profile.value.email,
+                          placeholder: 'No email added',
+                        ),
+                        _InfoRow(
+                          icon: Icons.phone_outlined,
+                          value: controller.profile.value.phone,
+                          placeholder: 'No phone added',
+                        ),
+                        _InfoRow(
+                          icon: Icons.location_on_outlined,
+                          value: controller.profile.value.location,
+                          placeholder: 'No location added',
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
                 SizedBox(height: 16.h),
                 _SectionCard(
                   title: 'Online Presence',
                   icon: Icons.public_rounded,
-                  child: Obx(() => Column(
-                        children: [
-                          _InfoRow(icon: Icons.link_rounded, value: controller.profile.value.website, placeholder: 'No website added'),
-                          _InfoRow(icon: Icons.work_outline_rounded, value: controller.profile.value.linkedin, placeholder: 'No LinkedIn added'),
-                          _InfoRow(icon: Icons.code_rounded, value: controller.profile.value.github, placeholder: 'No GitHub added'),
-                        ],
-                      )),
+                  child: Obx(
+                    () => Column(
+                      children: [
+                        _InfoRow(
+                          icon: Icons.link_rounded,
+                          value: controller.profile.value.website,
+                          placeholder: 'No website added',
+                        ),
+                        _InfoRow(
+                          icon: Icons.work_outline_rounded,
+                          value: controller.profile.value.linkedin,
+                          placeholder: 'No LinkedIn added',
+                        ),
+                        _InfoRow(
+                          icon: Icons.code_rounded,
+                          value: controller.profile.value.github,
+                          placeholder: 'No GitHub added',
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
                 SizedBox(height: 100.h), // bottom nav clearance
               ],
@@ -154,20 +202,41 @@ class _EditProfileView extends StatelessWidget {
                 children: [
                   IconButton(
                     onPressed: controller.cancelEditing,
-                    icon: const Icon(Icons.close_rounded, color: AppColors.whiteColor),
+                    icon: const Icon(
+                      Icons.close_rounded,
+                      color: AppColors.whiteColor,
+                    ),
                   ),
                   Expanded(
-                    child: Text('Edit Profile', style: AppStyle.style18w700(color: AppColors.whiteColor), textAlign: TextAlign.center),
+                    child: Text(
+                      'Edit Profile',
+                      style: AppStyle.style18w700(color: AppColors.whiteColor),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                  Obx(() => controller.isSaving.value
-                      ? const Padding(
-                          padding: EdgeInsets.all(12),
-                          child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: AppColors.appBlue, strokeWidth: 2)),
-                        )
-                      : TextButton(
-                          onPressed: () => controller.saveProfile(context),
-                          child: Text('Save', style: AppStyle.style16w600(color: AppColors.appBlue)),
-                        )),
+                  Obx(
+                    () => controller.isSaving.value
+                        ? const Padding(
+                            padding: EdgeInsets.all(12),
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: AppColors.appBlue,
+                                strokeWidth: 2,
+                              ),
+                            ),
+                          )
+                        : TextButton(
+                            onPressed: () => controller.saveProfile(context),
+                            child: Text(
+                              'Save',
+                              style: AppStyle.style16w600(
+                                color: AppColors.appBlue,
+                              ),
+                            ),
+                          ),
+                  ),
                 ],
               ),
             ),
@@ -187,10 +256,16 @@ class _EditProfileView extends StatelessWidget {
                       child: Container(
                         padding: EdgeInsets.all(8.r),
                         decoration: const BoxDecoration(
-                          gradient: LinearGradient(colors: [AppColors.appBlue, AppColors.appPurple]),
+                          gradient: LinearGradient(
+                            colors: [AppColors.appBlue, AppColors.appPurple],
+                          ),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(Icons.camera_alt_rounded, color: Colors.white, size: 16.r),
+                        child: Icon(
+                          Icons.camera_alt_rounded,
+                          color: Colors.white,
+                          size: 16.r,
+                        ),
                       ),
                     ),
                   ),
@@ -207,23 +282,80 @@ class _EditProfileView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 8.h),
-                  _EditSection(title: 'Basic Info', children: [
-                    _Field(label: 'Full Name', controller: controller.fullNameCtrl, icon: Icons.person_outline_rounded, validator: controller.validateRequired),
-                    _Field(label: 'Job Title', controller: controller.jobTitleCtrl, icon: Icons.work_outline_rounded, hint: 'e.g. Senior Flutter Developer'),
-                    _Field(label: 'Bio', controller: controller.bioCtrl, icon: Icons.notes_rounded, maxLines: 4, hint: 'Tell recruiters about yourself...'),
-                  ]),
+                  _EditSection(
+                    title: 'Basic Info',
+                    children: [
+                      _Field(
+                        label: 'Full Name',
+                        controller: controller.fullNameCtrl,
+                        icon: Icons.person_outline_rounded,
+                        validator: controller.validateRequired,
+                      ),
+                      _Field(
+                        label: 'Job Title',
+                        controller: controller.jobTitleCtrl,
+                        icon: Icons.work_outline_rounded,
+                        hint: 'e.g. Senior Flutter Developer',
+                      ),
+                      _Field(
+                        label: 'Bio',
+                        controller: controller.bioCtrl,
+                        icon: Icons.notes_rounded,
+                        maxLines: 4,
+                        hint: 'Tell recruiters about yourself...',
+                      ),
+                    ],
+                  ),
                   SizedBox(height: 20.h),
-                  _EditSection(title: 'Contact', children: [
-                    _Field(label: 'Email', controller: controller.emailCtrl, icon: Icons.email_outlined, keyboardType: TextInputType.emailAddress, validator: controller.validateEmail),
-                    _Field(label: 'Phone', controller: controller.phoneCtrl, icon: Icons.phone_outlined, keyboardType: TextInputType.phone),
-                    _Field(label: 'Location', controller: controller.locationCtrl, icon: Icons.location_on_outlined, hint: 'City, Country'),
-                  ]),
+                  _EditSection(
+                    title: 'Contact',
+                    children: [
+                      _Field(
+                        label: 'Email',
+                        controller: controller.emailCtrl,
+                        icon: Icons.email_outlined,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: controller.validateEmail,
+                      ),
+                      _Field(
+                        label: 'Phone',
+                        controller: controller.phoneCtrl,
+                        icon: Icons.phone_outlined,
+                        keyboardType: TextInputType.phone,
+                      ),
+                      _Field(
+                        label: 'Location',
+                        controller: controller.locationCtrl,
+                        icon: Icons.location_on_outlined,
+                        hint: 'City, Country',
+                      ),
+                    ],
+                  ),
                   SizedBox(height: 20.h),
-                  _EditSection(title: 'Online Presence', children: [
-                    _Field(label: 'Website', controller: controller.websiteCtrl, icon: Icons.link_rounded, keyboardType: TextInputType.url, hint: 'https://yoursite.com'),
-                    _Field(label: 'LinkedIn', controller: controller.linkedinCtrl, icon: Icons.work_outline_rounded, hint: 'linkedin.com/in/username'),
-                    _Field(label: 'GitHub', controller: controller.githubCtrl, icon: Icons.code_rounded, hint: 'github.com/username'),
-                  ]),
+                  _EditSection(
+                    title: 'Online Presence',
+                    children: [
+                      _Field(
+                        label: 'Website',
+                        controller: controller.websiteCtrl,
+                        icon: Icons.link_rounded,
+                        keyboardType: TextInputType.url,
+                        hint: 'https://yoursite.com',
+                      ),
+                      _Field(
+                        label: 'LinkedIn',
+                        controller: controller.linkedinCtrl,
+                        icon: Icons.work_outline_rounded,
+                        hint: 'linkedin.com/in/username',
+                      ),
+                      _Field(
+                        label: 'GitHub',
+                        controller: controller.githubCtrl,
+                        icon: Icons.code_rounded,
+                        hint: 'github.com/username',
+                      ),
+                    ],
+                  ),
                   SizedBox(height: 100.h),
                 ],
               ),
@@ -252,7 +384,11 @@ class _ProfileHeader extends StatelessWidget {
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [AppColors.appBlue, AppColors.appPurple, AppColors.appPink],
+              colors: [
+                AppColors.appBlue,
+                AppColors.appPurple,
+                AppColors.appPink,
+              ],
             ),
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(32.r),
@@ -272,14 +408,23 @@ class _ProfileHeader extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.whiteColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(20.r),
-                border: Border.all(color: AppColors.whiteColor.withValues(alpha: 0.3)),
+                border: Border.all(
+                  color: AppColors.whiteColor.withValues(alpha: 0.3),
+                ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.edit_rounded, color: AppColors.whiteColor, size: 14.r),
+                  Icon(
+                    Icons.edit_rounded,
+                    color: AppColors.whiteColor,
+                    size: 14.r,
+                  ),
                   SizedBox(width: 6.w),
-                  Text('Edit', style: AppStyle.style13w600(color: AppColors.whiteColor)),
+                  Text(
+                    'Edit',
+                    style: AppStyle.style13w600(color: AppColors.whiteColor),
+                  ),
                 ],
               ),
             ),
@@ -293,17 +438,27 @@ class _ProfileHeader extends StatelessWidget {
             children: [
               _AvatarWidget(controller: controller, radius: 50.r),
               SizedBox(height: 12.h),
-              Obx(() => Text(
-                    controller.profile.value.fullName.isEmpty ? 'Your Name' : controller.profile.value.fullName,
-                    style: AppStyle.style22w700(color: AppColors.whiteColor),
-                    textAlign: TextAlign.center,
-                  )),
+              Obx(
+                () => Text(
+                  controller.profile.value.fullName.isEmpty
+                      ? 'Your Name'
+                      : controller.profile.value.fullName,
+                  style: AppStyle.style22w700(color: AppColors.whiteColor),
+                  textAlign: TextAlign.center,
+                ),
+              ),
               SizedBox(height: 4.h),
-              Obx(() => Text(
-                    controller.profile.value.jobTitle.isEmpty ? 'Add your job title' : controller.profile.value.jobTitle,
-                    style: AppStyle.style14w400(color: AppColors.whiteColor.withValues(alpha: 0.7)),
-                    textAlign: TextAlign.center,
-                  )),
+              Obx(
+                () => Text(
+                  controller.profile.value.jobTitle.isEmpty
+                      ? 'Add your job title'
+                      : controller.profile.value.jobTitle,
+                  style: AppStyle.style14w400(
+                    color: AppColors.whiteColor.withValues(alpha: 0.7),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
               SizedBox(height: 6.h),
               Obx(() {
                 final loc = controller.profile.value.location;
@@ -311,9 +466,18 @@ class _ProfileHeader extends StatelessWidget {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.location_on_rounded, color: AppColors.appPink, size: 14.r),
+                    Icon(
+                      Icons.location_on_rounded,
+                      color: AppColors.appPink,
+                      size: 14.r,
+                    ),
                     SizedBox(width: 4.w),
-                    Text(loc, style: AppStyle.style13w400(color: AppColors.whiteColor.withValues(alpha: 0.6))),
+                    Text(
+                      loc,
+                      style: AppStyle.style13w400(
+                        color: AppColors.whiteColor.withValues(alpha: 0.6),
+                      ),
+                    ),
                   ],
                 );
               }),
@@ -341,7 +505,13 @@ class _AvatarWidget extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(color: AppColors.whiteColor, width: 3),
-        boxShadow: [BoxShadow(color: AppColors.appBlue.withValues(alpha: 0.4), blurRadius: 20, spreadRadius: 2)],
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.appBlue.withValues(alpha: 0.4),
+            blurRadius: 20,
+            spreadRadius: 2,
+          ),
+        ],
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -349,14 +519,23 @@ class _AvatarWidget extends StatelessWidget {
         ),
       ),
       child: ClipOval(
-        child: Obx(() => controller.hasAvatar
-            ? Image.file(File(controller.profile.value.avatarPath), fit: BoxFit.cover)
-            : Center(
-                child: Text(
-                  controller.initials,
-                  style: TextStyle(color: AppColors.whiteColor, fontSize: radius * 0.55, fontWeight: FontWeight.w700),
+        child: Obx(
+          () => controller.hasAvatar
+              ? Image.file(
+                  File(controller.profile.value.avatarPath),
+                  fit: BoxFit.cover,
+                )
+              : Center(
+                  child: Text(
+                    controller.initials,
+                    style: TextStyle(
+                      color: AppColors.whiteColor,
+                      fontSize: radius * 0.55,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
-              )),
+        ),
       ),
     );
   }
@@ -365,7 +544,12 @@ class _AvatarWidget extends StatelessWidget {
 // ── Stat Card ────────────────────────────────────────────────────────────────
 
 class _StatCard extends StatelessWidget {
-  const _StatCard({required this.label, required this.value, required this.icon, required this.color});
+  const _StatCard({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.color,
+  });
   final String label;
   final String value;
   final IconData icon;
@@ -380,15 +564,26 @@ class _StatCard extends StatelessWidget {
           color: AppColors.homeBackgroundColor2,
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(color: color.withValues(alpha: 0.3)),
-          boxShadow: [BoxShadow(color: color.withValues(alpha: 0.15), blurRadius: 12)],
+          boxShadow: [
+            BoxShadow(color: color.withValues(alpha: 0.15), blurRadius: 12),
+          ],
         ),
         child: Column(
           children: [
             Icon(icon, color: color, size: 22.r),
             SizedBox(height: 6.h),
-            Text(value, style: AppStyle.style20w700(color: AppColors.whiteColor)),
+            Text(
+              value,
+              style: AppStyle.style20w700(color: AppColors.whiteColor),
+            ),
             SizedBox(height: 2.h),
-            Text(label, style: AppStyle.style10w400(color: AppColors.whiteColor.withValues(alpha: 0.6)), textAlign: TextAlign.center),
+            Text(
+              label,
+              style: AppStyle.style10w400(
+                color: AppColors.whiteColor.withValues(alpha: 0.6),
+              ),
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       ),
@@ -399,7 +594,11 @@ class _StatCard extends StatelessWidget {
 // ── Section Card ─────────────────────────────────────────────────────────────
 
 class _SectionCard extends StatelessWidget {
-  const _SectionCard({required this.title, required this.icon, required this.child});
+  const _SectionCard({
+    required this.title,
+    required this.icon,
+    required this.child,
+  });
   final String title;
   final IconData icon;
   final Widget child;
@@ -420,10 +619,16 @@ class _SectionCard extends StatelessWidget {
             children: [
               Icon(icon, color: AppColors.appBlue, size: 18.r),
               SizedBox(width: 8.w),
-              Text(title, style: AppStyle.style16w600(color: AppColors.whiteColor)),
+              Text(
+                title,
+                style: AppStyle.style16w600(color: AppColors.whiteColor),
+              ),
             ],
           ),
-          Divider(color: AppColors.whiteColor.withValues(alpha: 0.1), height: 20.h),
+          Divider(
+            color: AppColors.whiteColor.withValues(alpha: 0.1),
+            height: 20.h,
+          ),
           child,
         ],
       ),
@@ -434,7 +639,11 @@ class _SectionCard extends StatelessWidget {
 // ── Info Row ──────────────────────────────────────────────────────────────────
 
 class _InfoRow extends StatelessWidget {
-  const _InfoRow({required this.icon, required this.value, required this.placeholder});
+  const _InfoRow({
+    required this.icon,
+    required this.value,
+    required this.placeholder,
+  });
   final IconData icon;
   final String value;
   final String placeholder;
@@ -446,13 +655,19 @@ class _InfoRow extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 6.h),
       child: Row(
         children: [
-          Icon(icon, color: isEmpty ? AppColors.appGreyC : AppColors.appBlue, size: 18.r),
+          Icon(
+            icon,
+            color: isEmpty ? AppColors.appGreyC : AppColors.appBlue,
+            size: 18.r,
+          ),
           SizedBox(width: 12.w),
           Expanded(
             child: Text(
               isEmpty ? placeholder : value,
               style: AppStyle.style14w400(
-                color: isEmpty ? AppColors.whiteColor.withValues(alpha: 0.3) : AppColors.whiteColor.withValues(alpha: 0.85),
+                color: isEmpty
+                    ? AppColors.whiteColor.withValues(alpha: 0.3)
+                    : AppColors.whiteColor.withValues(alpha: 0.85),
               ),
               overflow: TextOverflow.ellipsis,
             ),
@@ -482,13 +697,14 @@ class _EditSection extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.homeBackgroundColor2,
             borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(color: AppColors.whiteColor.withValues(alpha: 0.08)),
+            border: Border.all(
+              color: AppColors.whiteColor.withValues(alpha: 0.08),
+            ),
           ),
           child: Column(
-            children: children
-                .expand((w) => [w, SizedBox(height: 14.h)])
-                .toList()
-              ..removeLast(),
+            children:
+                children.expand((w) => [w, SizedBox(height: 14.h)]).toList()
+                  ..removeLast(),
           ),
         ),
       ],
@@ -519,40 +735,14 @@ class _Field extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    return CustomAppTextField(
       controller: controller,
+      label: label,
+      hint: hint ?? '',
+      icon: icon,
       maxLines: maxLines,
       keyboardType: keyboardType,
       validator: validator,
-      style: AppStyle.style14w400(color: AppColors.whiteColor),
-      cursorColor: AppColors.appBlue,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        prefixIcon: Icon(icon, color: AppColors.appBlue, size: 18.r),
-        labelStyle: AppStyle.style13w400(color: AppColors.whiteColor.withValues(alpha: 0.5)),
-        hintStyle: AppStyle.style13w400(color: AppColors.whiteColor.withValues(alpha: 0.3)),
-        filled: true,
-        fillColor: AppColors.homeBackgroundColor1.withValues(alpha: 0.6),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: BorderSide(color: AppColors.whiteColor.withValues(alpha: 0.1)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: AppColors.appBlue, width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: AppColors.appPink),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: AppColors.appPink, width: 1.5),
-        ),
-        errorStyle: AppStyle.style12w400(color: AppColors.appPink),
-        contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
-      ),
     );
   }
 }

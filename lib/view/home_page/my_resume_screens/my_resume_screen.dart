@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_with_hive/core/themes.dart';
+import 'package:flutter_with_hive/widgets/common/app_shell.dart';
+import 'package:flutter_with_hive/widgets/common/gradient_primary_button.dart';
 
-// My Resumes Screen (Placeholder)
 class MyResumesScreen extends StatelessWidget {
   const MyResumesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF0A0E27), Color(0xFF1A1F3A), Color(0xFF2D1B69)],
+    return AppGradientScaffold(
+      child: AppEmptyState(
+        icon: Icons.folder_copy_rounded,
+        title: 'Your resume workspace is ready',
+        message:
+            'Saved drafts, exported CVs, and progress history can live here once the resume flow is connected.',
+        action: GradientPrimaryButton(
+          onPressed: () {},
+          text: 'Create Resume',
+          icon: Icons.add_rounded,
+          colors: const [AppColors.appBlue, AppColors.appPurple],
+          isExpanded: false,
         ),
-      ),
-      child: const Center(
-        child: Text('My Resumes Screen', style: TextStyle(color: Colors.white, fontSize: 24)),
       ),
     );
   }

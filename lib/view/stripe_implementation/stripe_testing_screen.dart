@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_with_hive/core/themes.dart';
-import 'package:flutter_with_hive/view/stripe_implementation/stripint_testing_controller.dart';
+import 'package:flutter_with_hive/view/stripe_implementation/stripe_testing_controller.dart';
 import 'package:flutter_with_hive/widgets/common/app_shell.dart';
 import 'package:flutter_with_hive/widgets/common/gradient_primary_button.dart';
 import 'package:flutter_with_hive/widgets/text/app_style.dart';
 import 'package:get/get.dart';
 
-class StripTesting extends StatefulWidget {
-  const StripTesting({super.key});
+class StripeTestingScreen extends StatefulWidget {
+  const StripeTestingScreen({super.key});
 
   @override
-  State<StripTesting> createState() => _StripTestingState();
+  State<StripeTestingScreen> createState() => _StripeTestingScreenState();
 }
 
-class _StripTestingState extends State<StripTesting> {
-  final controller = Get.put(StripintTestingController());
+class _StripeTestingScreenState extends State<StripeTestingScreen> {
+  final controller = Get.put(StripeTestingController());
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class _StripTestingState extends State<StripTesting> {
                   GradientPrimaryButton(
                     onPressed: controller.isLoadingStripe.value
                         ? () {}
-                        : () => controller.postStripData(context, 3000),
+                        : () => controller.postStripeData(context, 3000),
                     text: controller.isLoadingStripe.value
                         ? 'Processing...'
                         : 'Pay Now',

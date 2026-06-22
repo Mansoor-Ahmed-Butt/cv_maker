@@ -9,7 +9,7 @@ import 'package:go_router/go_router.dart';
 
 
 // Onboarding Controller
-class OnboardingController1 extends GetxController {
+class OnboardingController extends GetxController {
   var currentPage = 0.obs;
   final PageController pageController = PageController();
 

@@ -12,7 +12,10 @@ import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-const String _stripePublishableKey = String.fromEnvironment('STRIPE_PUBLISHABLE_KEY', defaultValue: '');
+const String _stripePublishableKey = String.fromEnvironment(
+  'STRIPE_PUBLISHABLE_KEY',
+  defaultValue: '',
+);
 
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -69,8 +72,6 @@ Future<void> _initializeServices() async {
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
-  final ColorScheme appColors = ColorScheme.fromSeed(seedColor: AppColors.primaryColor);
-
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -83,14 +84,8 @@ class MyApp extends StatelessWidget {
           routerDelegate: RouteConfig.routes.routerDelegate,
           routeInformationParser: RouteConfig.routes.routeInformationParser,
           routeInformationProvider: RouteConfig.routes.routeInformationProvider,
-          title: "Hive with Flutter",
-          theme: ThemeData(
-            brightness: Brightness.light,
-            primaryColor: Colors.green,
-            colorScheme: appColors,
-            highlightColor: const Color(0xffFC9D74),
-            textSelectionTheme: TextSelectionThemeData(selectionColor: AppColors.bodyText.withValues(alpha: 0.4), cursorColor: AppColors.primaryColor, selectionHandleColor: AppColors.primaryColor),
-          ),
+          title: 'CV Maker',
+          theme: AppTheme.lightTheme,
           debugShowCheckedModeBanner: false,
         );
       },

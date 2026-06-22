@@ -2,94 +2,86 @@ import 'package:flutter_with_hive/view/ads_display/ads_implementation.dart';
 import 'package:flutter_with_hive/view/ai_chat_bot/chat_screen.dart';
 import 'package:flutter_with_hive/view/home_page/main_home_screen.dart';
 import 'package:flutter_with_hive/view/on_boarding/onboarding_screen.dart';
-import 'package:flutter_with_hive/view/log_in/view/log_in.dart';
+import 'package:flutter_with_hive/view/log_in/view/login_screen.dart';
+import 'package:flutter_with_hive/view/sign_up/view/sign_up.dart';
 import 'package:flutter_with_hive/view/user_testing/user_screen.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_with_hive/view/voice_vapi/vapi_voice_real_time.dart';
 
 class RouteConfig {
-  //Signup
-  static const String paymentPlanRoute = "/Login";
-  static const String logInScreenRoute = "/Login";
-  static const String onboardingScreen = "/onBoarding";
-  static const String adsScreen = "/adsScreen";
-  static const String aiChatBotScreen = "/aiChatBotScreen";
-  static const String userScreen = "/userScreen";
-  static const String bottomNavigation = "/bottomNavigation";
-  static const String vapiChatScreen = "/vapiChatScreen";
-  static const String mainHomeScreen = "/mainHomeScreen";
+  static const String paymentPlanRoute = '/login';
+  static const String loginScreenRoute = '/login';
+  static const String signUpScreenRoute = '/sign-up';
+  static const String onboardingScreen = '/onboarding';
+  static const String adsScreen = '/ads';
+  static const String aiChatBotScreen = '/ai-chat';
+  static const String userScreen = '/user';
+  static const String bottomNavigation = '/bottom-navigation';
+  static const String vapiChatScreen = '/vapi-chat';
+  static const String mainHomeScreen = '/main-home';
 
   static GoRouter routes = GoRouter(
     initialLocation: "/",
     navigatorKey: Get.key,
     routes: [
-      // GoRoute(path: '/', builder: (context, state) => MainHomeScreen()),
-         GoRoute(path: '/', builder: (context, state) => OnboardingScreen()),
-
-      // GoRoute(path: '/', builder: (context, state) => VapiChatScreen()),
-      // GoRoute(path: '/', builder: (context, state) => MainScreen()),
-      // GoRoute(path: '/', builder: (context, state) => UserScreen()),
-      // GoRoute(path: '/', builder: (context, state) => AiChatbotScreen()),
-      // GoRoute(path: '/', builder: (context, state) => AdsImplementationScreen()),
-      // GoRoute(path: '/', builder: (context, state) => StripTesting()),
-      // GoRoute(path: '/', builder: (context, state) => OnboardingScreen()),
+      GoRoute(path: '/', builder: (context, state) => const OnboardingScreen()),
       GoRoute(
-        path: '/vapiChatScreen',
+        path: vapiChatScreen,
         name: vapiChatScreen,
-
         builder: (context, state) {
           return VapiChatScreen();
         },
       ),
       GoRoute(
-        path: '/onboardingScreen',
+        path: onboardingScreen,
         name: onboardingScreen,
-
         builder: (context, state) {
-          return OnboardingScreen();
+          return const OnboardingScreen();
         },
       ),
       GoRoute(
-        path: '/mainHomeScreen',
+        path: mainHomeScreen,
         name: mainHomeScreen,
-
         builder: (context, state) {
-          return MainHomeScreen();
+          return const MainHomeScreen();
         },
       ),
       GoRoute(
-        path: '/userScreen',
+        path: userScreen,
         name: userScreen,
         builder: (context, state) {
           return UserScreen();
         },
       ),
-     
       GoRoute(
-        path: '/adsScreen',
+        path: adsScreen,
         name: adsScreen,
         builder: (context, state) {
           return AdsImplementationScreen();
         },
       ),
       GoRoute(
-        path: '/aiChatBotScreen',
+        path: aiChatBotScreen,
         name: aiChatBotScreen,
         builder: (context, state) {
           return AiChatbotScreen();
         },
       ),
       GoRoute(
-        path: '/Login',
-        name: logInScreenRoute,
-        //  builder: (context, state) => SignUp()
+        path: loginScreenRoute,
+        name: loginScreenRoute,
         builder: (context, state) {
-          // print("This is state $state \n This is context ${Get.key}");
-          return const LogIn();
+          return const LoginScreen();
         },
       ),
-     
+      GoRoute(
+        path: signUpScreenRoute,
+        name: signUpScreenRoute,
+        builder: (context, state) {
+          return const SignUp();
+        },
+      ),
       // GoRoute(
       //   path: redirectOrganizationSetup,
       //   name: redirectOrganizationSetup,
@@ -106,7 +98,7 @@ class RouteConfig {
       //         ));
       //   },
       // ),
-     
+
       // GoRoute(
       //   path: "/administrationMainScreen",
       //   name: administrationMainScreen,
@@ -133,7 +125,7 @@ class RouteConfig {
       //     return await authMiddlewareGoRoute() ? null : loginUsaPageRoute;
       //   },
       // ),
-   
+
       // GoRoute(
       //   path: "/processPayroll",
       //   name: processPayroll,

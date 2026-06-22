@@ -35,7 +35,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
 
   @override
   Widget build(BuildContext context) {
-    final OnboardingController1 controller = Get.put(OnboardingController1());
+    final OnboardingController controller = Get.put(OnboardingController());
 
     return Scaffold(
       body: Container(
