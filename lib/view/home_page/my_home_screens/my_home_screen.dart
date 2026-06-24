@@ -4,6 +4,7 @@ import 'dart:math' as math;
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_with_hive/core/themes.dart';
+import 'package:flutter_with_hive/view/resume_workflow/resume_workflow_screen.dart';
 import 'package:flutter_with_hive/widgets/common/app_shell.dart';
 import 'package:flutter_with_hive/widgets/custom_icon_button.dart';
 import 'package:flutter_with_hive/widgets/create_resume_alert/resume_dialog.dart';
@@ -310,7 +311,15 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen>
                                 color: AppColors.transparent,
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(16.r),
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute<void>(
+                                        builder: (_) => const ResumeWorkflowScreen(
+                                          startFresh: true,
+                                        ),
+                                      ),
+                                    );
+                                  },
                                   child: Padding(
                                     padding: EdgeInsets.symmetric(
                                       vertical: 18.h,

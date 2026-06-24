@@ -7,6 +7,10 @@ import 'package:flutter_with_hive/core/app_router.dart';
 import 'package:flutter_with_hive/core/themes.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_with_hive/view/home_page/my_profile_screens/profile_model.dart';
+import 'package:flutter_with_hive/view/resume_workflow/resume_ai_service.dart';
+import 'package:flutter_with_hive/view/resume_workflow/resume_pdf_service.dart';
+import 'package:flutter_with_hive/view/resume_workflow/resume_workspace_controller.dart';
+import 'package:get/get.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
@@ -67,6 +71,15 @@ Future<void> _initializeServices() async {
   await Hive.openBox<ProfileModel>('profileBox');
 
   // Add other async inits here (analytics, remote config, etc.)
+  Get.put<ResumeAiService>(ResumeAiService(), permanent: true);
+  Get.put<ResumePdfService>(ResumePdfService(), permanent: true);
+  Get.put<ResumeWorkspaceController>(
+    ResumeWorkspaceController(
+      aiService: Get.find<ResumeAiService>(),
+      pdfService: Get.find<ResumePdfService>(),
+    ),
+    permanent: true,
+  );
 }
 
 class MyApp extends StatelessWidget {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_with_hive/core/themes.dart';
 import 'package:flutter_with_hive/view/home_page/main_home_screen_controller.dart';
+import 'package:flutter_with_hive/view/resume_workflow/resume_workflow_screen.dart';
 import 'package:flutter_with_hive/widgets/text/app_style.dart';
 import 'package:get/get.dart';
 import 'package:flutter_with_hive/widgets/create_resume_alert/responsive_widget.dart';
@@ -271,7 +272,11 @@ class _CenterFab extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(30.r),
           onTap: () {
-            // TODO: hook up to resume creation dialog
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const ResumeWorkflowScreen(startFresh: true),
+              ),
+            );
           },
           child: Icon(
             Icons.add_rounded,

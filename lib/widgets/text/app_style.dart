@@ -7,6 +7,9 @@ class AppStyle {
   static TextStyle style9w600({Color? color = AppColors.titleColor}) {
     return TextStyle(color: color, fontSize: 9, fontFamily: 'Montserrat', fontWeight: FontWeight.w600);
   }
+   static TextStyle style11w500({Color? color = AppColors.titleColor}) {
+    return TextStyle(color: color, fontSize: 11, fontFamily: 'Montserrat', fontWeight: FontWeight.w500);
+  }
    static TextStyle style17w700({Color? color = AppColors.titleColor}) {
     return TextStyle(color: color, fontSize: 17, fontFamily: 'Montserrat', fontWeight: FontWeight.w700);
   }
