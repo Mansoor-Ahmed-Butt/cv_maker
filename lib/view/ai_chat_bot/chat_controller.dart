@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_with_hive/core/global.dart';
 import 'package:flutter_with_hive/core/utils/api_urls.dart';
 import 'package:flutter_with_hive/core/utils/print_log.dart';
@@ -44,8 +45,8 @@ class AiChatBotController extends GetxController {
   // Speech
   late stt.SpeechToText _speechToText;
 
-  // Keys / config - replace these with secure source before production
-  String apiKey = '2bfb4957-fa34-4e2f-947a-a978ff5901ba'; // PRIVATE token expected
+  // Keys / config - loaded from .env file for security
+  String get apiKey => dotenv.env['GEMINI_API_KEY'] ?? '';
   String assistantId = 'd01cf2c7-6f67-4a6c-872e-571a5193c009';
 
   @override

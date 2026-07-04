@@ -1,19 +1,16 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 import 'package:flutter_with_hive/view/resume_workflow/resume_models.dart';
 
-const String _geminiApiKey = String.fromEnvironment(
-  'GEMINI_API_KEY',
-  defaultValue: '',
-);
-
 class ResumeAiService {
   ResumeAiService() {
-    if (_geminiApiKey.isNotEmpty) {
-      _model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: _geminiApiKey);
+    final String? apiKey = dotenv.env['GEMINI_API_KEY'];
+    if (apiKey != null && apiKey.isNotEmpty) {
+      _model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
     }
   }
 

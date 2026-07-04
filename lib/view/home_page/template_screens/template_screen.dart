@@ -38,7 +38,7 @@ class TemplatesScreen extends StatelessWidget {
               itemCount: ResumeTemplate.values.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: MediaQuery.of(context).size.width > 700 ? 2 : 1,
-                childAspectRatio: 1.18,
+                childAspectRatio: 0.85,
                 mainAxisSpacing: 14.h,
                 crossAxisSpacing: 14.w,
               ),
@@ -90,6 +90,7 @@ class TemplatesScreen extends StatelessWidget {
                         text: 'Use This Template',
                         icon: Icons.auto_awesome_rounded,
                         colors: const <Color>[AppColors.appPink, AppColors.appOrangeC],
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                     ],
                   ),

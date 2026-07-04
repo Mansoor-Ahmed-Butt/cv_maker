@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -16,14 +17,19 @@ import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-const String _stripePublishableKey = String.fromEnvironment(
-  'STRIPE_PUBLISHABLE_KEY',
-  defaultValue: '',
-);
+const String _stripePublishableKey = String.fromEnvironment('STRIPE_PUBLISHABLE_KEY', defaultValue: '');
 
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   debugInvertOversizedImages = true;
+
+  // Load .env file for API keys with error handling
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    print('Warning: Failed to load .env file: $e');
+    // App will continue without .env, but AI features may not work
+  }
 
   // Keep native splash until app is ready.
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
@@ -52,6 +58,7 @@ Future<void> main() async {
 }
 
 Future<void> _initializeServices() async {
+  await dotenv.load(fileName: ".env");
   // Initialize Hive storage
   if (kIsWeb) {
     // On web, Hive uses IndexedDB automatically - no path needed
@@ -73,17 +80,11 @@ Future<void> _initializeServices() async {
   // Add other async inits here (analytics, remote config, etc.)
   Get.put<ResumeAiService>(ResumeAiService(), permanent: true);
   Get.put<ResumePdfService>(ResumePdfService(), permanent: true);
-  Get.put<ResumeWorkspaceController>(
-    ResumeWorkspaceController(
-      aiService: Get.find<ResumeAiService>(),
-      pdfService: Get.find<ResumePdfService>(),
-    ),
-    permanent: true,
-  );
+  Get.put<ResumeWorkspaceController>(ResumeWorkspaceController(aiService: Get.find<ResumeAiService>(), pdfService: Get.find<ResumePdfService>()), permanent: true);
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
