@@ -688,18 +688,18 @@ class _ResumeWorkflowScreenState extends State<ResumeWorkflowScreen> {
                     },
                   ),
 
-                  // Download / Print
+                  // Download / Print / Native PDF Layout (perfect orientation on emulator)
                   _ActionButton(
-                    icon: Icons.download_rounded,
-                    label: 'Download PDF',
+                    icon: Icons.print_rounded,
+                    label: 'Print / Save',
                     gradient: const LinearGradient(
                       colors: <Color>[AppColors.appPink, AppColors.appOrangeC],
                     ),
                     onTap: () async {
-                      final Uint8List bytes = await _controller.buildPdf();
-                      final String fileName =
-                          '${draft.displayName.replaceAll(' ', '_')}.pdf';
-                      await Printing.sharePdf(bytes: bytes, filename: fileName);
+                      await Printing.layoutPdf(
+                        onLayout: (PdfPageFormat format) => _controller.buildPdf(),
+                        name: draft.displayName,
+                      );
                     },
                   ),
                 ],
@@ -708,16 +708,80 @@ class _ResumeWorkflowScreenState extends State<ResumeWorkflowScreen> {
           ),
         ),
         SizedBox(height: 12.h),
+        // ── PDF preview header ──
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'PDF Preview',
+              style: AppStyle.style14w600(color: AppColors.whiteColor.withValues(alpha: 0.7)),
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute<dynamic>(
+                    builder: (BuildContext context) => FullscreenResumePreview(
+                      draft: draft,
+                      controller: _controller,
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                decoration: BoxDecoration(
+                  color: AppColors.whiteColor.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(
+                    color: AppColors.whiteColor.withValues(alpha: 0.12),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.fullscreen_rounded,
+                      color: AppColors.whiteColor,
+                      size: 16.r,
+                    ),
+                    SizedBox(width: 4.w),
+                    Text(
+                      'Fullscreen',
+                      style: AppStyle.style12w600(color: AppColors.whiteColor),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 8.h),
         // ── PDF preview ──
         Expanded(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20.r),
-            child: PdfPreview(
-              allowPrinting: true,
-              allowSharing: true,
-              canDebug: false,
-              pdfFileName: '${draft.displayName.replaceAll(' ', '_')}.pdf',
-              build: (PdfPageFormat format) => _controller.buildPdf(),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<dynamic>(
+                  builder: (BuildContext context) => FullscreenResumePreview(
+                    draft: draft,
+                    controller: _controller,
+                  ),
+                ),
+              );
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.r),
+              child: PdfPreview(
+                allowPrinting: true,
+                allowSharing: true,
+                canDebug: false,
+                useActions: false, // Cleaner inline presentation
+                maxPageWidth: 400.w, // Limit resolution to optimize memory usage & avoid console decode size spam
+                pdfFileName: '${draft.displayName.replaceAll(' ', '_')}.pdf',
+                build: (PdfPageFormat format) => _controller.buildPdf(),
+                loadingWidget: const Center(
+                  child: CircularProgressIndicator(color: AppColors.appBlue),
+                ),
+              ),
             ),
           ),
         ),
@@ -1549,6 +1613,107 @@ class _ActionButton extends StatelessWidget {
               Text(
                 label,
                 style: AppStyle.style13w600(color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Fullscreen Resume Preview Screen ─────────────────────────────────────────
+
+class FullscreenResumePreview extends StatelessWidget {
+  const FullscreenResumePreview({
+    super.key,
+    required this.draft,
+    required this.controller,
+  });
+
+  final ResumeDraft draft;
+  final ResumeWorkspaceController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0F172A), // Premium dark background
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.close_rounded, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          draft.displayName,
+          style: AppStyle.style16w600(color: Colors.white),
+        ),
+        centerTitle: true,
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.share_rounded, color: Colors.white),
+            tooltip: 'Share',
+            onPressed: () async {
+              final Uint8List bytes = await controller.buildPdf();
+              final String fileName = '${draft.displayName.replaceAll(' ', '_')}.pdf';
+              await Printing.sharePdf(bytes: bytes, filename: fileName);
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.print_rounded, color: Colors.white),
+            tooltip: 'Print / Save',
+            onPressed: () async {
+              await Printing.layoutPdf(
+                onLayout: (PdfPageFormat format) => controller.buildPdf(),
+                name: draft.displayName,
+              );
+            },
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(16.r),
+          child: Column(
+            children: <Widget>[
+              // Floating help banner in case of emulator GPU rendering bugs
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+                margin: EdgeInsets.only(bottom: 12.h),
+                decoration: BoxDecoration(
+                  color: AppColors.appBlue.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(color: AppColors.appBlue.withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline_rounded, color: AppColors.appBlue, size: 20.r),
+                    SizedBox(width: 10.w),
+                    Expanded(
+                      child: Text(
+                        'If the preview appears mirrored on your emulator, tap the print icon at the top right to view/save in native layout orientation.',
+                        style: AppStyle.style12w500(color: AppColors.whiteColor),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16.r),
+                  child: PdfPreview(
+                    allowPrinting: true,
+                    allowSharing: true,
+                    canDebug: false,
+                    useActions: false, // Hide duplicate toolbar actions inside full-screen view
+                    pdfFileName: '${draft.displayName.replaceAll(' ', '_')}.pdf',
+                    build: (PdfPageFormat format) => controller.buildPdf(),
+                    loadingWidget: const Center(
+                      child: CircularProgressIndicator(color: AppColors.appBlue),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

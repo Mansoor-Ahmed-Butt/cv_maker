@@ -19,6 +19,7 @@ class ResumePdfService {
     pdf.addPage(
       pw.MultiPage(
         pageTheme: pw.PageTheme(
+          pageFormat: PdfPageFormat.a4,
           margin: const pw.EdgeInsets.all(28),
           theme: pw.ThemeData.withFont(base: baseFont, bold: boldFont),
         ),
