@@ -4,11 +4,14 @@ import 'dart:math' as math;
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_with_hive/core/themes.dart';
+import 'package:flutter_with_hive/view/resume_workflow/resume_models.dart';
 import 'package:flutter_with_hive/view/resume_workflow/resume_workflow_screen.dart';
+import 'package:flutter_with_hive/view/resume_workflow/resume_workspace_controller.dart';
 import 'package:flutter_with_hive/widgets/common/app_shell.dart';
 import 'package:flutter_with_hive/widgets/custom_icon_button.dart';
 import 'package:flutter_with_hive/widgets/create_resume_alert/resume_dialog.dart';
 import 'package:flutter_with_hive/widgets/text/app_style.dart';
+import 'package:get/get.dart';
 
 // Animated Home Screen
 
@@ -486,42 +489,9 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen>
                     ),
                     SizedBox(height: 32.h),
 
-                    // Recent Work Section
-                    AppSectionHeader(
-                      title: 'Continue Working',
-                      action: TextButton.icon(
-                        onPressed: () {},
-                        style: TextButton.styleFrom(
-                          foregroundColor: AppColors.appBlue,
-                        ),
-                        icon: const Icon(Icons.arrow_forward_rounded),
-                        label: Text(
-                          'View All',
-                          style: AppStyle.style14w600(color: AppColors.appBlue),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16.h),
-                    _buildResumeCard(
-                      'Software Engineer Resume',
-                      'Last edited 2 hours ago',
-                      0.85,
-                      AppColors.appBlue,
-                    ),
-                    SizedBox(height: 12.h),
-                    _buildResumeCard(
-                      'Product Designer CV',
-                      'Last edited yesterday',
-                      0.60,
-                      AppColors.appPurple,
-                    ),
-                    SizedBox(height: 12.h),
-                    _buildResumeCard(
-                      'Marketing Manager',
-                      'Last edited 3 days ago',
-                      0.45,
-                      AppColors.appPink,
-                    ),
+                    // Recent Work Section – live drafts from Hive
+                    _LiveContinueWorkingSection(),
+
                   ],
                 ),
               ),
@@ -642,119 +612,263 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen>
     );
   }
 
-  Widget _buildResumeCard(
-    String title,
-    String date,
-    double progress,
-    Color accentColor,
-  ) {
-    return Container(
-      padding: EdgeInsets.all(20.r),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.resumeCardColor1.withValues(alpha: 0.8),
-            AppColors.resumeCardColor2.withValues(alpha: 0.8),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: AppColors.whiteColor.withValues(alpha: 0.1)),
-      ),
-      child: Column(
+}
+
+
+
+// ── Live "Continue Working" section ──────────────────────────────────────────
+
+class _LiveContinueWorkingSection extends StatelessWidget {
+  const _LiveContinueWorkingSection();
+
+  static const List<Color> _accentColors = <Color>[
+    AppColors.appBlue,
+    AppColors.appPurple,
+    AppColors.appPink,
+    AppColors.appGreenC,
+    AppColors.appOrangeC,
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final ResumeWorkspaceController ctrl = Get.find<ResumeWorkspaceController>();
+
+    return Obx(() {
+      final drafts = ctrl.drafts;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(14.r),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      accentColor.withValues(alpha: 0.3),
-                      accentColor.withValues(alpha: 0.1),
-                    ],
+          // ── Section header ──
+          AppSectionHeader(
+            title: 'Continue Working',
+            action: drafts.isEmpty
+                ? null
+                : TextButton.icon(
+                    onPressed: () {
+                      // Navigate to My CVs tab (index 2)
+                      // We push the resume screen directly since we're in home
+                    },
+                    style: TextButton.styleFrom(foregroundColor: AppColors.appBlue),
+                    icon: const Icon(Icons.arrow_forward_rounded, size: 16),
+                    label: Text(
+                      'View All',
+                      style: AppStyle.style14w600(color: AppColors.appBlue),
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(14.r),
-                ),
-                child: CustomIcon(
-                  iconOnly: true,
-                  icon: Icons.description_rounded,
-                  iconColor: accentColor,
-                  size: 28.r,
-                ),
-              ),
-              SizedBox(width: 16.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: AppStyle.style17w600(color: AppColors.whiteColor),
-                    ),
-                    SizedBox(height: 4.h),
-                    Text(
-                      date,
-                      style: AppStyle.style13w500(
-                        color: AppColors.whiteColor.withValues(alpha: 0.5),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(8.r),
-                decoration: BoxDecoration(
-                  color: AppColors.whiteColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-                child: CustomIcon(
-                  iconOnly: true,
-                  icon: Icons.more_horiz_rounded,
-                  iconColor: AppColors.whiteColor,
-                  size: 20.r,
-                ),
-              ),
-            ],
           ),
           SizedBox(height: 16.h),
-          Row(
-            children: [
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.r),
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    backgroundColor: AppColors.whiteColor.withValues(
-                      alpha: 0.1,
+
+          // ── Empty state ──
+          if (drafts.isEmpty)
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(24.r),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.resumeCardColor1.withValues(alpha: 0.6),
+                    AppColors.resumeCardColor2.withValues(alpha: 0.6),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(20.r),
+                border: Border.all(
+                  color: AppColors.whiteColor.withValues(alpha: 0.08),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.folder_open_rounded,
+                    color: AppColors.whiteColor.withValues(alpha: 0.3),
+                    size: 44.r,
+                  ),
+                  SizedBox(height: 12.h),
+                  Text(
+                    'No resumes yet',
+                    style: AppStyle.style16w700(color: AppColors.whiteColor),
+                  ),
+                  SizedBox(height: 6.h),
+                  Text(
+                    'Tap "Start Creating Now" above to build your first resume',
+                    textAlign: TextAlign.center,
+                    style: AppStyle.style13w400(
+                      color: AppColors.whiteColor.withValues(alpha: 0.55),
                     ),
-                    valueColor: AlwaysStoppedAnimation<Color>(accentColor),
-                    minHeight: 8,
                   ),
-                ),
+                ],
               ),
-              SizedBox(width: 12.w),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      accentColor.withValues(alpha: 0.3),
-                      accentColor.withValues(alpha: 0.1),
-                    ],
+            )
+          else
+            // ── Draft cards ──
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: drafts.length,
+              separatorBuilder: (_, __) => SizedBox(height: 12.h),
+              itemBuilder: (BuildContext context, int index) {
+                final ResumeDraft draft = drafts[index];
+                final Color accent = _accentColors[index % _accentColors.length];
+                final double completion = ctrl.completionPercent(draft);
+                final int missingCount = ctrl.missingFields(draft).length;
+
+                return GestureDetector(
+                  onTap: () {
+                    ctrl.openDraft(draft.id);
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => ResumeWorkflowScreen(
+                          draftId: draft.id,
+                          initialStep: 2,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(18.r),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppColors.resumeCardColor1.withValues(alpha: 0.85),
+                          AppColors.resumeCardColor2.withValues(alpha: 0.85),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(20.r),
+                      border: Border.all(
+                        color: accent.withValues(alpha: 0.18),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: accent.withValues(alpha: 0.08),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            // Icon badge
+                            Container(
+                              padding: EdgeInsets.all(12.r),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    accent.withValues(alpha: 0.3),
+                                    accent.withValues(alpha: 0.1),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(14.r),
+                              ),
+                              child: Icon(
+                                Icons.description_rounded,
+                                color: accent,
+                                size: 26.r,
+                              ),
+                            ),
+                            SizedBox(width: 14.w),
+                            // Title + meta
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    draft.displayName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: AppStyle.style15w500(
+                                      color: AppColors.whiteColor,
+                                    ),
+                                  ),
+                                  SizedBox(height: 3.h),
+                                  Row(
+                                    children: [
+                                      // Template badge
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 8.w,
+                                          vertical: 2.h,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: accent.withValues(alpha: 0.18),
+                                          borderRadius: BorderRadius.circular(20.r),
+                                        ),
+                                        child: Text(
+                                          draft.template.label,
+                                          style: AppStyle.style10w600(
+                                            color: accent,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(width: 8.w),
+                                      if (missingCount > 0)
+                                        Text(
+                                          '$missingCount field${missingCount == 1 ? '' : 's'} missing',
+                                          style: AppStyle.style11w500(
+                                            color: AppColors.appOrangeC
+                                                .withValues(alpha: 0.85),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // Arrow
+                            Container(
+                              padding: EdgeInsets.all(8.r),
+                              decoration: BoxDecoration(
+                                color: AppColors.whiteColor.withValues(alpha: 0.08),
+                                borderRadius: BorderRadius.circular(10.r),
+                              ),
+                              child: Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                color: AppColors.whiteColor.withValues(alpha: 0.6),
+                                size: 14.r,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 14.h),
+                        // Progress bar
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10.r),
+                                child: LinearProgressIndicator(
+                                  value: completion,
+                                  backgroundColor:
+                                      AppColors.whiteColor.withValues(alpha: 0.1),
+                                  valueColor:
+                                      AlwaysStoppedAnimation<Color>(accent),
+                                  minHeight: 6,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 10.w),
+                            Text(
+                              '${(completion * 100).toInt()}%',
+                              style: AppStyle.style12w600(color: accent),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Text(
-                  '${(progress * 100).toInt()}%',
-                  style: AppStyle.style14w700(color: accentColor),
-                ),
-              ),
-            ],
-          ),
+                );
+              },
+            ),
+
+          SizedBox(height: 32.h),
         ],
-      ),
-    );
+      );
+    });
   }
 }
+

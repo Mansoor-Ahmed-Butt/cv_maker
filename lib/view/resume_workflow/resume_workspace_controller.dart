@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 
 import 'package:flutter_with_hive/view/resume_workflow/resume_ai_service.dart';
 import 'package:flutter_with_hive/view/resume_workflow/resume_models.dart';
@@ -11,11 +14,15 @@ class ResumeWorkspaceController extends GetxController {
   ResumeWorkspaceController({
     required ResumeAiService aiService,
     required ResumePdfService pdfService,
-  }) : _aiService = aiService,
-       _pdfService = pdfService;
+  })  : _aiService = aiService,
+        _pdfService = pdfService;
 
   final ResumeAiService _aiService;
   final ResumePdfService _pdfService;
+
+  static const String _boxName = 'resume_drafts_v1';
+
+  late Box<String> _box;
 
   final RxList<ResumeDraft> drafts = <ResumeDraft>[].obs;
   final Rxn<ResumeDraft> currentDraft = Rxn<ResumeDraft>();
@@ -24,6 +31,104 @@ class ResumeWorkspaceController extends GetxController {
   final Rx<ResumeTemplate> preferredTemplate = ResumeTemplate.modern.obs;
 
   bool get hasGeminiConfigured => _aiService.isConfigured;
+
+  // ── Lifecycle ───────────────────────────────────────────────────────────────
+
+  @override
+  Future<void> onInit() async {
+    super.onInit();
+    await _openBox();
+    _loadAllDraftsFromHive();
+  }
+
+  Future<void> _openBox() async {
+    if (Hive.isBoxOpen(_boxName)) {
+      _box = Hive.box<String>(_boxName);
+    } else {
+      _box = await Hive.openBox<String>(_boxName);
+    }
+  }
+
+  // ── Hive helpers ────────────────────────────────────────────────────────────
+
+  void _loadAllDraftsFromHive() {
+    final List<ResumeDraft> loaded = <ResumeDraft>[];
+    for (final String key in _box.keys.cast<String>()) {
+      try {
+        final String? raw = _box.get(key);
+        if (raw != null) {
+          final ResumeDraft draft = _draftFromJson(jsonDecode(raw) as Map<String, dynamic>);
+          loaded.add(draft);
+        }
+      } catch (_) {
+        // Skip corrupted entries
+      }
+    }
+    // Sort newest first
+    loaded.sort((ResumeDraft a, ResumeDraft b) => b.updatedAt.compareTo(a.updatedAt));
+    drafts.assignAll(loaded);
+  }
+
+  Future<void> _saveDraftToHive(ResumeDraft draft) async {
+    try {
+      await _box.put(draft.id, jsonEncode(_draftToJson(draft)));
+    } catch (e) {
+      debugPrint('Hive save error: $e');
+    }
+  }
+
+  Future<void> _deleteDraftFromHive(String id) async {
+    try {
+      await _box.delete(id);
+    } catch (e) {
+      debugPrint('Hive delete error: $e');
+    }
+  }
+
+  // ── Serialization ────────────────────────────────────────────────────────────
+
+  Map<String, dynamic> _draftToJson(ResumeDraft draft) {
+    return <String, dynamic>{
+      'id': draft.id,
+      'createdAt': draft.createdAt.toIso8601String(),
+      'updatedAt': draft.updatedAt.toIso8601String(),
+      'originalFileName': draft.originalFileName,
+      // Store PDF bytes as base64 (may be large but needed for re-parsing)
+      'originalPdfBytes': base64Encode(Uint8List.fromList(draft.originalPdfBytes)),
+      'resume': draft.resume.toJson(),
+      'template': draft.template.name,
+      'aiEnhanced': draft.aiEnhanced,
+    };
+  }
+
+  ResumeDraft _draftFromJson(Map<String, dynamic> json) {
+    final String templateName = json['template']?.toString() ?? 'modern';
+    final ResumeTemplate template = ResumeTemplate.values.firstWhere(
+      (ResumeTemplate t) => t.name == templateName,
+      orElse: () => ResumeTemplate.modern,
+    );
+
+    List<int> pdfBytes = <int>[];
+    try {
+      final String? encoded = json['originalPdfBytes']?.toString();
+      if (encoded != null && encoded.isNotEmpty) {
+        pdfBytes = base64Decode(encoded);
+      }
+    } catch (_) {}
+
+    return ResumeDraft(
+      id: json['id']?.toString() ?? '',
+      createdAt: DateTime.tryParse(json['createdAt']?.toString() ?? '') ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(json['updatedAt']?.toString() ?? '') ?? DateTime.now(),
+      originalFileName: json['originalFileName']?.toString() ?? '',
+      originalPdfBytes: pdfBytes,
+      resume: ResumeModel.fromJson(json['resume'] as Map<String, dynamic>? ?? <String, dynamic>{}),
+      template: template,
+      aiEnhanced: (json['aiEnhanced'] as bool?) ?? false,
+    );
+  }
+
+  // ── Public API ────────────────────────────────────────────────────────────────
 
   Future<bool> importOldCv() async {
     final FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -68,6 +173,7 @@ class ResumeWorkspaceController extends GetxController {
 
       currentDraft.value = draft;
       drafts.insert(0, draft);
+      await _saveDraftToHive(draft);
       statusMessage.value = 'CV imported. Select a new template and complete any missing fields.';
       return true;
     } catch (_) {
@@ -78,11 +184,27 @@ class ResumeWorkspaceController extends GetxController {
     }
   }
 
+  /// Explicitly saves (or re-saves) the current draft to Hive and shows confirmation.
+  Future<bool> saveDraftExplicitly() async {
+    final ResumeDraft? draft = currentDraft.value;
+    if (draft == null) return false;
+    draft.updatedAt = DateTime.now();
+    await _saveDraftToHive(draft);
+    // Ensure the draft is in the list
+    final int idx = drafts.indexWhere((ResumeDraft d) => d.id == draft.id);
+    if (idx == -1) {
+      drafts.insert(0, draft);
+    } else {
+      drafts[idx] = draft;
+    }
+    drafts.refresh();
+    return true;
+  }
+
   Future<Uint8List?> _resolveBytes(PlatformFile file) async {
     if (file.bytes != null) {
       return file.bytes!;
     }
-
     return null;
   }
 
@@ -105,6 +227,7 @@ class ResumeWorkspaceController extends GetxController {
     if (currentDraft.value?.id == draftId) {
       currentDraft.value = null;
     }
+    _deleteDraftFromHive(draftId);
   }
 
   void selectTemplate(ResumeTemplate template) {
@@ -320,6 +443,21 @@ class ResumeWorkspaceController extends GetxController {
     return issues;
   }
 
+  /// Returns completion percentage (0.0 – 1.0) for a draft.
+  double completionPercent(ResumeDraft draft) {
+    const int total = 8; // name, email, phone, jobTitle, summary, skills, experience, education
+    int filled = 0;
+    if (draft.resume.name.trim().isNotEmpty) filled++;
+    if (draft.resume.email.trim().isNotEmpty) filled++;
+    if (draft.resume.phone.trim().isNotEmpty) filled++;
+    if (draft.resume.jobTitle.trim().isNotEmpty) filled++;
+    if (draft.resume.summary.trim().isNotEmpty) filled++;
+    if (draft.resume.skills.isNotEmpty) filled++;
+    if (draft.resume.experience.isNotEmpty) filled++;
+    if (draft.resume.education.isNotEmpty) filled++;
+    return filled / total;
+  }
+
   Future<Uint8List> buildPdf() async {
     final ResumeDraft? draft = currentDraft.value;
     if (draft == null) {
@@ -342,6 +480,7 @@ class ResumeWorkspaceController extends GetxController {
       return;
     }
     draft.updatedAt = DateTime.now();
+    _saveDraftToHive(draft);
     if (shouldRefresh) {
       drafts.refresh();
       currentDraft.refresh();

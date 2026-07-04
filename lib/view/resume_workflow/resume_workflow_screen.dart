@@ -33,6 +33,8 @@ class ResumeWorkflowScreen extends StatefulWidget {
 class _ResumeWorkflowScreenState extends State<ResumeWorkflowScreen> {
   late final ResumeWorkspaceController _controller;
   late int _step;
+  bool _isSaving = false;
+
   static const List<String> _stepTitles = <String>[
     'Upload CV',
     'Choose Template',
@@ -134,6 +136,8 @@ class _ResumeWorkflowScreenState extends State<ResumeWorkflowScreen> {
     });
   }
 
+  // ── Step Header ─────────────────────────────────────────────────────────────
+
   Widget _buildStepHeader() {
     return Row(
       children: List<Widget>.generate(_stepTitles.length, (int index) {
@@ -141,12 +145,12 @@ class _ResumeWorkflowScreenState extends State<ResumeWorkflowScreen> {
         final bool isCompleted = index < _step;
         return Expanded(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4.w),
+            padding: EdgeInsets.symmetric(horizontal: 3.w),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 12.h),
+              padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 10.h),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(14.r),
+                borderRadius: BorderRadius.circular(12.r),
                 gradient: isActive || isCompleted
                     ? const LinearGradient(
                         colors: <Color>[AppColors.appBlue, AppColors.appPink],
@@ -162,17 +166,20 @@ class _ResumeWorkflowScreenState extends State<ResumeWorkflowScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text(
-                    '${index + 1}',
-                    style: AppStyle.style16w700(
-                      color: AppColors.whiteColor,
+                  if (isCompleted)
+                    Icon(Icons.check_rounded, color: AppColors.whiteColor, size: 16.r)
+                  else
+                    Text(
+                      '${index + 1}',
+                      style: AppStyle.style14w700(color: AppColors.whiteColor),
                     ),
-                  ),
-                  SizedBox(height: 4.h),
+                  SizedBox(height: 3.h),
                   Text(
                     _stepTitles[index],
                     textAlign: TextAlign.center,
-                    style: AppStyle.style11w500(
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppStyle.style10w600(
                       color: AppColors.whiteColor.withValues(alpha: 0.9),
                     ),
                   ),
@@ -184,6 +191,8 @@ class _ResumeWorkflowScreenState extends State<ResumeWorkflowScreen> {
       }),
     );
   }
+
+  // ── Step Body Router ─────────────────────────────────────────────────────────
 
   Widget _buildStepBody(ResumeDraft? draft, List<String> issues) {
     switch (_step) {
@@ -199,6 +208,8 @@ class _ResumeWorkflowScreenState extends State<ResumeWorkflowScreen> {
         return const SizedBox.shrink();
     }
   }
+
+  // ── Step 0 – Upload ──────────────────────────────────────────────────────────
 
   Widget _buildUploadStep(ResumeDraft? draft) {
     return SingleChildScrollView(
@@ -309,10 +320,14 @@ class _ResumeWorkflowScreenState extends State<ResumeWorkflowScreen> {
     );
   }
 
+  // ── Step 1 – Template ────────────────────────────────────────────────────────
+
   Widget _buildTemplateStep(ResumeDraft? draft) {
     if (draft == null) {
       return _lockedStep('Upload an old CV first to unlock template selection.');
     }
+
+    final int crossAxisCount = MediaQuery.of(context).size.width > 600 ? 2 : 2;
 
     return SingleChildScrollView(
       key: const ValueKey<int>(1),
@@ -337,78 +352,106 @@ class _ResumeWorkflowScreenState extends State<ResumeWorkflowScreen> {
             physics: const NeverScrollableScrollPhysics(),
             itemCount: ResumeTemplate.values.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: MediaQuery.of(context).size.width > 700 ? 2 : 1,
-              childAspectRatio: 1.35,
+              crossAxisCount: crossAxisCount,
+              childAspectRatio: 0.72,
               mainAxisSpacing: 14.h,
               crossAxisSpacing: 14.w,
             ),
             itemBuilder: (BuildContext context, int index) {
               final ResumeTemplate template = ResumeTemplate.values[index];
               final bool selected = draft.template == template;
-              return InkWell(
-                borderRadius: BorderRadius.circular(20.r),
+              return GestureDetector(
                 onTap: () {
                   _controller.selectTemplate(template);
                   setState(() {});
                 },
-                child: AppGlassCard(
-                  borderRadius: 20,
-                  backgroundColor: selected
-                      ? AppColors.appBlue.withValues(alpha: 0.22)
-                      : AppColors.surfaceDark.withValues(alpha: 0.82),
-                  borderColor: selected
-                      ? AppColors.appBlue
-                      : AppColors.whiteColor.withValues(alpha: 0.08),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Container(
-                            width: 44.w,
-                            height: 44.h,
-                            decoration: BoxDecoration(
-                              gradient: _templateGradient(template),
-                              borderRadius: BorderRadius.circular(14.r),
-                            ),
-                            child: const Icon(
-                              Icons.description_outlined,
-                              color: AppColors.whiteColor,
-                            ),
-                          ),
-                          const Spacer(),
-                          Icon(
-                            selected
-                                ? Icons.check_circle_rounded
-                                : Icons.radio_button_unchecked_rounded,
-                            color: selected
-                                ? AppColors.appGreenC
-                                : AppColors.whiteColor.withValues(alpha: 0.5),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 18.h),
-                      Text(
-                        template.label,
-                        style: AppStyle.style18w700(color: AppColors.whiteColor),
-                      ),
-                      SizedBox(height: 8.h),
-                      Text(
-                        template.description,
-                        style: AppStyle.style13w400(
-                          color: AppColors.whiteColor.withValues(alpha: 0.72),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.r),
+                    border: Border.all(
+                      color: selected ? AppColors.appBlue : AppColors.whiteColor.withValues(alpha: 0.12),
+                      width: selected ? 2.5 : 1,
+                    ),
+                    color: selected
+                        ? AppColors.appBlue.withValues(alpha: 0.1)
+                        : AppColors.whiteColor.withValues(alpha: 0.04),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(19.r),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        // ── Visual mini resume preview ──
+                        Expanded(
+                          child: _TemplateThumbnail(template: template),
                         ),
-                      ),
-                    ],
+                        // ── Label row ──
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceDark.withValues(alpha: 0.9),
+                            border: Border(
+                              top: BorderSide(
+                                color: selected
+                                    ? AppColors.appBlue.withValues(alpha: 0.4)
+                                    : AppColors.whiteColor.withValues(alpha: 0.06),
+                              ),
+                            ),
+                          ),
+                          child: Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      template.label,
+                                      style: AppStyle.style14w700(color: AppColors.whiteColor),
+                                    ),
+                                    SizedBox(height: 2.h),
+                                    Text(
+                                      template.description,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppStyle.style11w400(
+                                        color: AppColors.whiteColor.withValues(alpha: 0.65),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 8.w),
+                              AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 150),
+                                child: Icon(
+                                  selected
+                                      ? Icons.check_circle_rounded
+                                      : Icons.radio_button_unchecked_rounded,
+                                  key: ValueKey<bool>(selected),
+                                  color: selected
+                                      ? AppColors.appGreenC
+                                      : AppColors.whiteColor.withValues(alpha: 0.4),
+                                  size: 22.r,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
             },
           ),
+          SizedBox(height: 8.h),
         ],
       ),
     );
   }
+
+  // ── Step 2 – Editor ──────────────────────────────────────────────────────────
 
   Widget _buildEditorStep(ResumeDraft? draft, List<String> issues) {
     if (draft == null) {
@@ -553,6 +596,8 @@ class _ResumeWorkflowScreenState extends State<ResumeWorkflowScreen> {
     );
   }
 
+  // ── Step 3 – Preview & Download ──────────────────────────────────────────────
+
   Widget _buildPreviewStep(ResumeDraft? draft, List<String> issues) {
     if (draft == null) {
       return _lockedStep('Upload, select a template, and edit your resume before previewing.');
@@ -562,59 +607,108 @@ class _ResumeWorkflowScreenState extends State<ResumeWorkflowScreen> {
       key: const ValueKey<int>(3),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
+        // ── Action card ──
         AppGlassCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                'Preview the final resume',
+                'Preview your resume',
                 style: AppStyle.style20w700(color: AppColors.whiteColor),
               ),
-              SizedBox(height: 8.h),
+              SizedBox(height: 6.h),
               Text(
                 issues.isEmpty
-                    ? 'Everything looks ready. Preview and download the final PDF.'
-                    : 'You can still download the file, but completing the missing fields will improve the result.',
-                style: AppStyle.style14w400(
-                  color: AppColors.whiteColor.withValues(alpha: 0.75),
+                    ? 'Everything looks ready — save, share or download below.'
+                    : 'Completing the missing fields will improve the result.',
+                style: AppStyle.style13w400(
+                  color: AppColors.whiteColor.withValues(alpha: 0.72),
                 ),
               ),
               SizedBox(height: 14.h),
-              Row(
+              // ── 3 action buttons ──
+              Wrap(
+                spacing: 10.w,
+                runSpacing: 10.h,
                 children: <Widget>[
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () => setState(() => _step = 2),
-                      icon: const Icon(Icons.edit_note_rounded),
-                      label: const Text('Back to Edit'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.whiteColor,
-                        side: BorderSide(
-                          color: AppColors.whiteColor.withValues(alpha: 0.18),
-                        ),
-                        padding: EdgeInsets.symmetric(vertical: 14.h),
-                      ),
+                  // Save to My CVs
+                  _ActionButton(
+                    icon: _isSaving ? Icons.hourglass_top_rounded : Icons.save_rounded,
+                    label: _isSaving ? 'Saving…' : 'Save to My CVs',
+                    gradient: const LinearGradient(
+                      colors: <Color>[AppColors.appGreenC, AppColors.appDarkGreenC],
                     ),
+                    onTap: _isSaving
+                        ? null
+                        : () async {
+                            setState(() => _isSaving = true);
+                            final bool ok = await _controller.saveDraftExplicitly();
+                            if (mounted) {
+                              setState(() => _isSaving = false);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Row(
+                                    children: <Widget>[
+                                      Icon(
+                                        ok ? Icons.check_circle_rounded : Icons.error_rounded,
+                                        color: AppColors.whiteColor,
+                                      ),
+                                      SizedBox(width: 10.w),
+                                      Text(
+                                        ok
+                                            ? '✅ Resume saved to My CVs!'
+                                            : '❌ Could not save resume.',
+                                      ),
+                                    ],
+                                  ),
+                                  backgroundColor: ok ? AppColors.appGreenC : AppColors.appPink,
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.r),
+                                  ),
+                                  margin: EdgeInsets.all(16.r),
+                                ),
+                              );
+                            }
+                          },
                   ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: GradientPrimaryButton(
-                      onPressed: () async {
-                        final Uint8List bytes = await _controller.buildPdf();
-                        final String fileName =
-                            '${draft.displayName.replaceAll(' ', '_')}.pdf';
-                        await Printing.sharePdf(bytes: bytes, filename: fileName);
-                      },
-                      text: 'Download / Share',
-                      icon: Icons.download_rounded,
+
+                  // Share PDF
+                  _ActionButton(
+                    icon: Icons.share_rounded,
+                    label: 'Share',
+                    gradient: const LinearGradient(
+                      colors: <Color>[AppColors.appBlue, AppColors.appPurple],
                     ),
+                    onTap: () async {
+                      final Uint8List bytes = await _controller.buildPdf();
+                      final String fileName =
+                          '${draft.displayName.replaceAll(' ', '_')}.pdf';
+                      await Printing.sharePdf(bytes: bytes, filename: fileName);
+                    },
+                  ),
+
+                  // Download / Print
+                  _ActionButton(
+                    icon: Icons.download_rounded,
+                    label: 'Download PDF',
+                    gradient: const LinearGradient(
+                      colors: <Color>[AppColors.appPink, AppColors.appOrangeC],
+                    ),
+                    onTap: () async {
+                      final Uint8List bytes = await _controller.buildPdf();
+                      final String fileName =
+                          '${draft.displayName.replaceAll(' ', '_')}.pdf';
+                      await Printing.sharePdf(bytes: bytes, filename: fileName);
+                    },
                   ),
                 ],
               ),
             ],
           ),
         ),
-        SizedBox(height: 16.h),
+        SizedBox(height: 12.h),
+        // ── PDF preview ──
         Expanded(
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20.r),
@@ -630,6 +724,8 @@ class _ResumeWorkflowScreenState extends State<ResumeWorkflowScreen> {
       ],
     );
   }
+
+  // ── Sub-section builders ─────────────────────────────────────────────────────
 
   Widget _buildExperienceSection(ResumeDraft draft) {
     return Column(
@@ -660,10 +756,12 @@ class _ResumeWorkflowScreenState extends State<ResumeWorkflowScreen> {
                     final int index = entry.key;
                     final Experience item = entry.value;
                     return Padding(
-                      padding: EdgeInsets.only(bottom: index == draft.resume.experience.length - 1 ? 0 : 16.h),
+                      padding: EdgeInsets.only(
+                          bottom: index == draft.resume.experience.length - 1 ? 0 : 16.h),
                       child: _entryCard(
                         title: 'Experience ${index + 1}',
-                        onRemove: () => _markDirty(() => _controller.removeExperience(index)),
+                        onRemove: () =>
+                            _markDirty(() => _controller.removeExperience(index)),
                         children: <Widget>[
                           _buildTextField(
                             label: 'Role title',
@@ -733,10 +831,12 @@ class _ResumeWorkflowScreenState extends State<ResumeWorkflowScreen> {
                     final int index = entry.key;
                     final Education item = entry.value;
                     return Padding(
-                      padding: EdgeInsets.only(bottom: index == draft.resume.education.length - 1 ? 0 : 16.h),
+                      padding: EdgeInsets.only(
+                          bottom: index == draft.resume.education.length - 1 ? 0 : 16.h),
                       child: _entryCard(
                         title: 'Education ${index + 1}',
-                        onRemove: () => _markDirty(() => _controller.removeEducation(index)),
+                        onRemove: () =>
+                            _markDirty(() => _controller.removeEducation(index)),
                         children: <Widget>[
                           _buildTextField(
                             label: 'Degree',
@@ -798,10 +898,12 @@ class _ResumeWorkflowScreenState extends State<ResumeWorkflowScreen> {
                     final int index = entry.key;
                     final Project item = entry.value;
                     return Padding(
-                      padding: EdgeInsets.only(bottom: index == draft.resume.projects.length - 1 ? 0 : 16.h),
+                      padding: EdgeInsets.only(
+                          bottom: index == draft.resume.projects.length - 1 ? 0 : 16.h),
                       child: _entryCard(
                         title: 'Project ${index + 1}',
-                        onRemove: () => _markDirty(() => _controller.removeProject(index)),
+                        onRemove: () =>
+                            _markDirty(() => _controller.removeProject(index)),
                         children: <Widget>[
                           _buildTextField(
                             label: 'Project name',
@@ -834,6 +936,8 @@ class _ResumeWorkflowScreenState extends State<ResumeWorkflowScreen> {
       ],
     );
   }
+
+  // ── Utility widgets ─────────────────────────────────────────────────────────
 
   Widget _sectionTitle(String title) {
     return Padding(
@@ -935,6 +1039,8 @@ class _ResumeWorkflowScreenState extends State<ResumeWorkflowScreen> {
       ),
     );
   }
+
+  // ── Footer ───────────────────────────────────────────────────────────────────
 
   Widget _buildFooter(ResumeDraft? draft) {
     final bool canContinue = draft != null || _step == 0;
@@ -1091,17 +1197,363 @@ class _ResumeWorkflowScreenState extends State<ResumeWorkflowScreen> {
       ),
     );
   }
+}
 
-  LinearGradient _templateGradient(ResumeTemplate template) {
+// ── Visual Template Thumbnail ────────────────────────────────────────────────
+
+class _TemplateThumbnail extends StatelessWidget {
+  const _TemplateThumbnail({required this.template});
+  final ResumeTemplate template;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: _ResumePainter(template: template),
+    );
+  }
+}
+
+class _ResumePainter extends CustomPainter {
+  const _ResumePainter({required this.template});
+  final ResumeTemplate template;
+
+  @override
+  void paint(Canvas canvas, Size size) {
     switch (template) {
       case ResumeTemplate.modern:
-        return const LinearGradient(colors: <Color>[AppColors.appBlue, AppColors.appPurple]);
+        _paintModern(canvas, size);
+        break;
       case ResumeTemplate.classic:
-        return const LinearGradient(colors: <Color>[Color(0xFF334155), Color(0xFF0F172A)]);
+        _paintClassic(canvas, size);
+        break;
       case ResumeTemplate.minimal:
-        return const LinearGradient(colors: <Color>[Color(0xFF64748B), Color(0xFFCBD5E1)]);
+        _paintMinimal(canvas, size);
+        break;
       case ResumeTemplate.creative:
-        return const LinearGradient(colors: <Color>[AppColors.appPink, AppColors.appOrangeC]);
+        _paintCreative(canvas, size);
+        break;
     }
+  }
+
+  // ── Helpers ──────────────────────────────────────────────────────────────────
+
+  void _bg(Canvas canvas, Size size, Color color) {
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height),
+        Paint()..color = color);
+  }
+
+  void _rect(Canvas canvas, double x, double y, double w, double h, Color color,
+      {double radius = 2}) {
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(Rect.fromLTWH(x, y, w, h), Radius.circular(radius)),
+      Paint()..color = color,
+    );
+  }
+
+  void _line(Canvas canvas, double x, double y, double w, Color color,
+      {double h = 3}) {
+    _rect(canvas, x, y, w, h, color, radius: 1.5);
+  }
+
+  // ── Modern ───────────────────────────────────────────────────────────────────
+
+  void _paintModern(Canvas canvas, Size size) {
+    const Color accent = Color(0xFF5B6CFF);
+    const Color bg = Color(0xFF0F1629);
+    const Color dimText = Color(0xFF64748B);
+
+    _bg(canvas, size, bg);
+
+    // Header band
+    _rect(canvas, 0, 0, size.width, size.height * 0.28, accent);
+
+    // Avatar circle
+    final double cx = 24;
+    final double cy = size.height * 0.14;
+    canvas.drawCircle(
+        Offset(cx, cy), 16, Paint()..color = Colors.white.withValues(alpha: 0.25));
+
+    // Name bar
+    _rect(canvas, 46, cy - 7, size.width * 0.45, 8, Colors.white.withValues(alpha: 0.9),
+        radius: 2);
+    // Subtitle bar
+    _rect(canvas, 46, cy + 5, size.width * 0.32, 5,
+        Colors.white.withValues(alpha: 0.5),
+        radius: 1.5);
+
+    // Section: Experience
+    double y = size.height * 0.33;
+    _rect(canvas, 12, y, 36, 5, accent, radius: 1.5);
+    y += 12;
+    _line(canvas, 12, y, size.width - 24, dimText);
+    y += 8;
+    _line(canvas, 12, y, size.width * 0.6, dimText);
+    y += 8;
+    _line(canvas, 12, y, size.width * 0.5, dimText);
+
+    // Section: Education
+    y += 14;
+    _rect(canvas, 12, y, 50, 5, accent, radius: 1.5);
+    y += 12;
+    _line(canvas, 12, y, size.width - 24, dimText);
+    y += 8;
+    _line(canvas, 12, y, size.width * 0.5, dimText);
+
+    // Skills chips
+    y += 14;
+    _rect(canvas, 12, y, 40, 5, accent, radius: 1.5);
+    y += 12;
+    double cx2 = 12;
+    for (int i = 0; i < 3; i++) {
+      final double w = 30.0 + i * 8;
+      _rect(canvas, cx2, y, w, 9, accent.withValues(alpha: 0.3), radius: 4);
+      cx2 += w + 6;
+    }
+  }
+
+  // ── Classic ──────────────────────────────────────────────────────────────────
+
+  void _paintClassic(Canvas canvas, Size size) {
+    const Color accent = Color(0xFF1E293B);
+    const Color bg = Color(0xFFF8FAFC);
+    const Color dimText = Color(0xFF94A3B8);
+    const Color lineColor = Color(0xFFCBD5E1);
+
+    _bg(canvas, size, bg);
+
+    // Top border line
+    _rect(canvas, 0, 0, size.width, 4, accent);
+
+    // Name large
+    _rect(canvas, 12, 14, size.width * 0.55, 10, accent, radius: 2);
+    // Subtitle
+    _rect(canvas, 12, 28, size.width * 0.38, 6, dimText, radius: 1.5);
+
+    // Divider
+    _line(canvas, 12, 42, size.width - 24, lineColor, h: 1);
+
+    // Two columns
+    final double col1w = size.width * 0.38;
+    final double col2x = col1w + 18;
+    final double col2w = size.width - col2x - 12;
+
+    double y = 52;
+
+    // Left column: Contact
+    _rect(canvas, 12, y, 28, 5, accent, radius: 1);
+    y += 10;
+    _line(canvas, 12, y, col1w - 8, dimText);
+    y += 7;
+    _line(canvas, 12, y, col1w - 14, dimText);
+    y += 7;
+    _line(canvas, 12, y, col1w - 10, dimText);
+
+    // Right column: Experience
+    double ry = 52;
+    _rect(canvas, col2x, ry, 40, 5, accent, radius: 1);
+    ry += 10;
+    _line(canvas, col2x, ry, col2w, dimText);
+    ry += 7;
+    _line(canvas, col2x, ry, col2w * 0.8, dimText);
+    ry += 7;
+    _line(canvas, col2x, ry, col2w * 0.7, dimText);
+    ry += 14;
+    _line(canvas, col2x, ry, col2w, dimText);
+    ry += 7;
+    _line(canvas, col2x, ry, col2w * 0.6, dimText);
+
+    // Left: Skills
+    y += 20;
+    _rect(canvas, 12, y, 26, 5, accent, radius: 1);
+    y += 10;
+    for (int i = 0; i < 4; i++) {
+      _rect(canvas, 12, y, col1w - 8, 5, lineColor, radius: 1);
+      y += 8;
+    }
+  }
+
+  // ── Minimal ──────────────────────────────────────────────────────────────────
+
+  void _paintMinimal(Canvas canvas, Size size) {
+    const Color accent = Color(0xFF64748B);
+    const Color bg = Color(0xFFFFFFFF);
+    const Color dimText = Color(0xFFCBD5E1);
+
+    _bg(canvas, size, bg);
+
+    // Name
+    _rect(canvas, 16, 16, size.width * 0.5, 9, const Color(0xFF1E293B), radius: 2);
+    // Title
+    _rect(canvas, 16, 29, size.width * 0.35, 5, accent, radius: 1.5);
+
+    // Thin bottom-border under header
+    _line(canvas, 16, 40, size.width - 32, accent.withValues(alpha: 0.3), h: 1);
+
+    double y = 52;
+    // Summary section
+    _line(canvas, 16, y, size.width - 32, dimText);
+    y += 7;
+    _line(canvas, 16, y, size.width * 0.75, dimText);
+    y += 7;
+    _line(canvas, 16, y, size.width * 0.6, dimText);
+
+    y += 14;
+    // Section label
+    _rect(canvas, 16, y, 40, 4, accent, radius: 1);
+    _line(canvas, 60, y + 1.5, size.width - 76, dimText, h: 1);
+    y += 10;
+    _line(canvas, 16, y, size.width - 32, dimText);
+    y += 7;
+    _line(canvas, 16, y, size.width * 0.65, dimText);
+
+    y += 14;
+    _rect(canvas, 16, y, 45, 4, accent, radius: 1);
+    _line(canvas, 65, y + 1.5, size.width - 81, dimText, h: 1);
+    y += 10;
+    _line(canvas, 16, y, size.width - 32, dimText);
+    y += 7;
+    _line(canvas, 16, y, size.width * 0.5, dimText);
+
+    y += 14;
+    _rect(canvas, 16, y, 30, 4, accent, radius: 1);
+    _line(canvas, 50, y + 1.5, size.width - 66, dimText, h: 1);
+    y += 10;
+    double cx2 = 16;
+    for (int i = 0; i < 4; i++) {
+      final double w = 28.0 + i * 4;
+      _rect(canvas, cx2, y, w, 8, dimText, radius: 4);
+      cx2 += w + 5;
+      if (cx2 > size.width - 30) break;
+    }
+  }
+
+  // ── Creative ─────────────────────────────────────────────────────────────────
+
+  void _paintCreative(Canvas canvas, Size size) {
+    const Color accent1 = Color(0xFFD946EF);
+    const Color accent2 = Color(0xFFF97316);
+    const Color bg = Color(0xFF0F172A);
+    const Color dimText = Color(0xFF64748B);
+
+    _bg(canvas, size, bg);
+
+    // Left sidebar gradient strip
+    final Rect sideRect = Rect.fromLTWH(0, 0, size.width * 0.3, size.height);
+    final Paint sidePaint = Paint()
+      ..shader = const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: <Color>[accent1, accent2],
+      ).createShader(sideRect);
+    canvas.drawRect(sideRect, sidePaint);
+
+    // Avatar circle on sidebar
+    canvas.drawCircle(
+      Offset(size.width * 0.15, size.height * 0.16),
+      20,
+      Paint()..color = Colors.white.withValues(alpha: 0.2),
+    );
+
+    // Sidebar labels
+    double sy = size.height * 0.34;
+    final double sw = size.width * 0.24;
+    for (int i = 0; i < 5; i++) {
+      _line(canvas, 8, sy, sw, Colors.white.withValues(alpha: 0.5 - i * 0.06));
+      sy += 9;
+    }
+
+    // Main area content
+    final double mx = size.width * 0.34;
+    final double mw = size.width - mx - 10;
+
+    double y = 16;
+    // Name
+    _rect(canvas, mx, y, mw * 0.7, 9, Colors.white.withValues(alpha: 0.88), radius: 2);
+    y += 13;
+    _rect(canvas, mx, y, mw * 0.5, 5, accent1.withValues(alpha: 0.7), radius: 1.5);
+
+    y += 16;
+    // Experience heading
+    _rect(canvas, mx, y, 40, 5, accent2, radius: 1.5);
+    y += 11;
+    _line(canvas, mx, y, mw, dimText);
+    y += 7;
+    _line(canvas, mx, y, mw * 0.75, dimText);
+    y += 7;
+    _line(canvas, mx, y, mw * 0.6, dimText);
+
+    y += 14;
+    _rect(canvas, mx, y, 38, 5, accent2, radius: 1.5);
+    y += 11;
+    _line(canvas, mx, y, mw, dimText);
+    y += 7;
+    _line(canvas, mx, y, mw * 0.7, dimText);
+
+    y += 14;
+    _rect(canvas, mx, y, 30, 5, accent2, radius: 1.5);
+    y += 11;
+    double cx2 = mx;
+    for (int i = 0; i < 3; i++) {
+      final double w = 26.0 + i * 5;
+      _rect(canvas, cx2, y, w, 8, accent1.withValues(alpha: 0.3), radius: 4);
+      cx2 += w + 5;
+      if (cx2 > size.width - 10) break;
+    }
+  }
+
+  @override
+  bool shouldRepaint(_ResumePainter oldDelegate) =>
+      oldDelegate.template != template;
+}
+
+// ── Action Button ────────────────────────────────────────────────────────────
+
+class _ActionButton extends StatelessWidget {
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    required this.gradient,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final LinearGradient gradient;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 150),
+        opacity: onTap == null ? 0.5 : 1.0,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+          decoration: BoxDecoration(
+            gradient: gradient,
+            borderRadius: BorderRadius.circular(12.r),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: gradient.colors.first.withValues(alpha: 0.35),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Icon(icon, color: Colors.white, size: 18.r),
+              SizedBox(width: 6.w),
+              Text(
+                label,
+                style: AppStyle.style13w600(color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

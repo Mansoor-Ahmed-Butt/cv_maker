@@ -121,6 +121,10 @@ class AppStyle {
     return TextStyle(color: color, fontSize: 10, fontFamily: 'Montserrat', fontWeight: FontWeight.w400);
   }
 
+  static TextStyle style10w500({Color? color = AppColors.titleColor}) {
+    return TextStyle(color: color, fontSize: 10, fontFamily: 'Montserrat', fontWeight: FontWeight.w500);
+  }
+
   static TextStyle style13w600({Color? color = AppColors.titleColor}) {
     return TextStyle(color: color, fontSize: 13, fontFamily: 'Montserrat', fontWeight: FontWeight.w600);
   }

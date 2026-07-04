@@ -17,7 +17,8 @@ import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-const String _stripePublishableKey = String.fromEnvironment('STRIPE_PUBLISHABLE_KEY', defaultValue: '');
+const String _stripePublishableKey =
+    String.fromEnvironment('STRIPE_PUBLISHABLE_KEY', defaultValue: '');
 
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -77,10 +78,19 @@ Future<void> _initializeServices() async {
   // Pre-open the profile box so it's ready before the profile tab is tapped
   await Hive.openBox<ProfileModel>('profileBox');
 
+  // Pre-open the resume drafts box so the controller can load persisted drafts on init
+  await Hive.openBox<String>('resume_drafts_v1');
+
   // Add other async inits here (analytics, remote config, etc.)
   Get.put<ResumeAiService>(ResumeAiService(), permanent: true);
   Get.put<ResumePdfService>(ResumePdfService(), permanent: true);
-  Get.put<ResumeWorkspaceController>(ResumeWorkspaceController(aiService: Get.find<ResumeAiService>(), pdfService: Get.find<ResumePdfService>()), permanent: true);
+  Get.put<ResumeWorkspaceController>(
+    ResumeWorkspaceController(
+      aiService: Get.find<ResumeAiService>(),
+      pdfService: Get.find<ResumePdfService>(),
+    ),
+    permanent: true,
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -94,7 +104,6 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return MaterialApp.router(
-          //showPerformanceOverlay: true,
           routerDelegate: RouteConfig.routes.routerDelegate,
           routeInformationParser: RouteConfig.routes.routeInformationParser,
           routeInformationProvider: RouteConfig.routes.routeInformationProvider,

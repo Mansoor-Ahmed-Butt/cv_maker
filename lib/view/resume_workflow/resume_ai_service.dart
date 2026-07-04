@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
@@ -10,7 +11,7 @@ class ResumeAiService {
   ResumeAiService() {
     final String? apiKey = dotenv.env['GEMINI_API_KEY'];
     if (apiKey != null && apiKey.isNotEmpty) {
-      _model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
+      _model = GenerativeModel(model: 'gemini-2.5-flash', apiKey: apiKey);
     }
   }
 
@@ -31,7 +32,7 @@ class ResumeAiService {
         <Content>[
           Content.multi(<Part>[
             DataPart('application/pdf', pdfBytes),
-             TextPart(_resumePrompt),
+            TextPart(_resumePrompt),
           ]),
         ],
       );
@@ -41,7 +42,8 @@ class ResumeAiService {
       if (decoded is Map<String, dynamic>) {
         return ResumeModel.fromJson(decoded);
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Gemini parsing failed: $e');
       // Fall back to a draft so the user can keep editing even if AI parsing fails.
     }
 
